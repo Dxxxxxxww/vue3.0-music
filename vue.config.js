@@ -8,9 +8,10 @@ module.exports = {
   chainWebpack: config => {
     config.resolve.alias
       .set('@', resolve('src'))
+      .set('@views', resolve('src/views'))
       .set('@components', resolve('src/components'))
       .set('@assets', resolve('src/assets'))
-      .set('styles', resolve('styles'))
+      .set('styles', resolve('src/styles'))
     // 配置引入字体
     // config.module.rule([
     //   {
