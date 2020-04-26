@@ -15,8 +15,8 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-@import '~styles/variable.styl'
-@import '~styles/mixin.styl'
+@import '~@styles/variable.styl'
+@import '~@styles/mixin.styl'
 
 .m-header
   text-align center

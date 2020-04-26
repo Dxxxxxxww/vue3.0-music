@@ -21,10 +21,10 @@ const jsonp = function(url, data, option) {
 const param = function(data) {
   let url = ''
   for (const key in data) {
-    let value = data[key] !== undefined ? data[key] : ''
+    const value = data[key] !== undefined ? data[key] : ''
     url += `&${key}=${encodeURIComponent(value)}`
   }
-  //截取最开始的 '&' 符号
+  // 截取最开始的 '&' 符号
   return url ? url.substr(1) : ''
 }
 

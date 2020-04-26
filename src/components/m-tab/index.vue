@@ -4,8 +4,8 @@
     <router-link tag="div" class="tab-item" to="/mine">
       <span class="tab-link" @click="handleClick($event)">我的</span>
     </router-link>
-    <router-link tag="div" class="tab-item" to="/discovery">
-      <span class="tab-link" @click="handleClick($event)">发现</span>
+    <router-link tag="div" class="tab-item" to="/recommend">
+      <span class="tab-link" @click="handleClick($event)">推荐</span>
     </router-link>
     <router-link tag="div" class="tab-item" to="/rank">
       <span class="tab-link" @click="handleClick($event)">排行</span>
@@ -15,18 +15,18 @@
     </router-link>
     <div class="search icon-search" @click="handleClick($event)"></div>
     <div class="animate" :style="[animatePos]">
-      <click-ripple></click-ripple>
+      <!-- <click-ripple></click-ripple> -->
     </div>
   </div>
 </template>
 
 <script>
-import ClickRipple from '@components/animate/click-ripple/index'
+// import ClickRipple from '@components/animate/click-ripple/index'
 
 export default {
   name: 'MTab',
   components: {
-    ClickRipple
+    // ClickRipple
   },
   data() {
     return {
@@ -48,7 +48,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-@import '~styles/variable.styl'
+@import '~@styles/variable.styl'
 
 .tab
   display flex

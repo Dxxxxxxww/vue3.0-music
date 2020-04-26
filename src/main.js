@@ -5,7 +5,7 @@ import router from './router'
 import store from './store'
 import fastclick from 'fastclick'
 
-import 'styles/index.styl'
+import '@styles/index.styl'
 
 fastclick.attach(document.body)
 
