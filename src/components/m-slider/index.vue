@@ -65,7 +65,6 @@ export default {
     setSliderWidth(isResize = false) {
       // 首先获取所有的图片数量
       this.children = this.$refs.sliderGroup.children
-      console.log(this.children.length)
       // 总宽度
       let width = 0
       // 最外层宽度

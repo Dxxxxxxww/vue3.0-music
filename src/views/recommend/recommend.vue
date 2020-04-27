@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { getRecommend } from '@/api/recommend'
+import { getRecommend, getDiscList } from '@/api/recommend'
 import MSlider from '@components/m-slider/index'
 import config from '@/config/config'
 
@@ -39,16 +39,29 @@ export default {
   },
   created() {
     this._getRecommend()
+    this._getDiscList()
   },
   methods: {
     // 在入口文件加上 keep-alive 避免每次切换路由都要重新渲染dom而重新请求
     _getRecommend() {
       getRecommend().then(res => {
         if (res.code === ERR_OK) {
-          log(res.data)
           this.recommends = res.data.slider
         }
       })
+      // .catch(rej => {
+      // api 返回的 reject 可以在这里 catch 住
+      // console.log('reject', rej)
+      // })
+    },
+    _getDiscList() {
+      getDiscList()
+        .then(res => {
+          log('resres', res.data)
+        })
+        .catch(rej => {
+          log(rej)
+        })
     }
   }
 }
