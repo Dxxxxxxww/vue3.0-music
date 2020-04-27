@@ -41,6 +41,7 @@ export default {
     this._getRecommend()
   },
   methods: {
+    // 在入口文件加上 keep-alive 避免每次切换路由都要重新渲染dom而重新请求
     _getRecommend() {
       getRecommend().then(res => {
         if (res.code === ERR_OK) {
