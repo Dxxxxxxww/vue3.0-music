@@ -1,27 +1,41 @@
 <template>
   <div class="recommend">
-    <div class="recommend-content">
-      <div class="slider-wrapper">
-        <div class="slider-content" v-if="recommends.length">
-          <m-slider :loop="true">
-            <div v-for="item of recommends" :key="item.id">
-              <a :href="item.linkUrl">
-                <img :src="item.picUrl" />
-              </a>
-            </div>
-          </m-slider>
+    <m-scroll :data="discList" class="recommend-content">
+      <div>
+        <div class="slider-wrapper">
+          <div class="slider-content" v-if="recommends.length">
+            <m-slider :loop="true">
+              <div v-for="item of recommends" :key="item.id">
+                <a :href="item.linkUrl">
+                  <img :src="item.picUrl" />
+                </a>
+              </div>
+            </m-slider>
+          </div>
+        </div>
+        <div class="recommend-list">
+          <h1 class="list-title">热门歌单推荐</h1>
+          <ul>
+            <li v-for="(item, index) of discList" :key="index" class="item">
+              <div class="icon">
+                <img width="60" height="60" :src="item.imgurl" />
+              </div>
+              <div class="text">
+                <h2 class="name" v-html="item.creator.name"></h2>
+                <p class="desc" v-html="item.dissname"></p>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
-      <div class="recommend-list">
-        <h1 class="list-title"></h1>
-      </div>
-    </div>
+    </m-scroll>
   </div>
 </template>
 
 <script>
 import { getRecommend, getDiscList } from '@/api/recommend'
 import MSlider from '@components/m-slider/index'
+import MScroll from '@components/m-scroll/index'
 import config from '@/config/config'
 
 const { ERR_OK } = config.code
@@ -30,11 +44,13 @@ const { log } = console
 export default {
   name: 'Recommend',
   components: {
-    MSlider
+    MSlider,
+    MScroll
   },
   data() {
     return {
-      recommends: []
+      recommends: [],
+      discList: []
     }
   },
   created() {
@@ -58,6 +74,7 @@ export default {
       getDiscList()
         .then(res => {
           log('resres', res.data)
+          this.discList = res.data.list
         })
         .catch(rej => {
           log(rej)
@@ -98,5 +115,25 @@ export default {
         line-height 65px
         text-align center
         font-size $font-size-medium
-        color $color-theme
+        color $color-text-dd
+      .item
+        display flex
+        align-items center
+        box-sizing border-box
+        padding 0 20px 20px 20px
+        .icon
+          flex 0 0 60px
+          width 60px
+          padding-right 20px
+        .text
+          display flex
+          flex-direction column
+          justify-content center
+          flex 1
+          line-height 20px
+          overflow hidden
+          font-size $font-size-medium
+          .name
+            margin-bottom 10px
+            color $color-text-d
 </style>

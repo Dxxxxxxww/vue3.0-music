@@ -19,8 +19,8 @@ module.exports = {
         axios
           .get(url, {
             headers: {
-              referer: 'https://u.y.qq.com',
-              host: 'u.y.qq.com'
+              referer: 'https://u.y.qq.com', // 表示请求来源
+              host: 'u.y.qq.com' // 表示域名
             },
             params: req.query
           })
@@ -66,8 +66,8 @@ module.exports = {
         axios
           .get(url, {
             headers: {
-              referer: 'https://u.y.qq.com/',
-              host: 'u.y.qq.com'
+              referer: 'https://u.y.qq.com/', // 表示请求来源
+              host: 'u.y.qq.com' // 表示域名
             },
             params: req.query
           })
