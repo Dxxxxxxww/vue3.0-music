@@ -14,7 +14,7 @@ const addClass = (el, className) => {
   if (hasClass(el, className)) {
     return
   }
-  let newClass = el.className.split(' ')
+  const newClass = el.className.split(' ')
   newClass.push(className)
   el.className = newClass.join(' ')
 }

@@ -9,6 +9,7 @@
                 <a :href="item.linkUrl">
                   <img @load="loadImage" :src="item.picUrl" />
                 </a>
+                <!-- fastclick 监测到元素有 needsclick 这个类就不会对其进行拦截  class="needsclick" 不过我现在这个版本的 fastclick和 BScroll 没有冲突，不必加 -->
               </div>
             </m-slider>
           </div>
@@ -18,7 +19,7 @@
           <ul>
             <li v-for="(item, index) of discList" :key="index" class="item">
               <div class="icon">
-                <img width="60" height="60" :src="item.imgurl" />
+                <img width="60" height="60" v-lazy="item.imgurl" />
               </div>
               <div class="text">
                 <h2 class="name" v-html="item.creator.name"></h2>
