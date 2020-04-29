@@ -28,6 +28,9 @@
             </li>
           </ul>
         </div>
+        <div class="loading-container" v-show="!discList.length">
+          <loading />
+        </div>
       </div>
     </m-scroll>
   </div>
@@ -37,6 +40,7 @@
 import { getRecommend, getDiscList } from '@/api/recommend'
 import MSlider from '@components/m-slider/index'
 import MScroll from '@components/m-scroll/index'
+import Loading from '@components/loading/loading'
 import config from '@/config/config'
 
 const { ERR_OK } = config.code
@@ -46,7 +50,8 @@ export default {
   name: 'Recommend',
   components: {
     MSlider,
-    MScroll
+    MScroll,
+    Loading
   },
   data() {
     return {
@@ -146,4 +151,9 @@ export default {
           .name
             margin-bottom 10px
             color $color-text-d
+    .loading-container
+      position absolute
+      width 100%
+      top 50%
+      transform translateY(-50%)
 </style>
