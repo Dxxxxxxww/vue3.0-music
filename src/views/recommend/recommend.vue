@@ -1,13 +1,13 @@
 <template>
   <div class="recommend">
-    <m-scroll :data="discList" class="recommend-content">
+    <m-scroll ref="scroll" :data="discList" class="recommend-content">
       <div>
         <div class="slider-wrapper">
           <div class="slider-content" v-if="recommends.length">
             <m-slider :loop="true">
               <div v-for="item of recommends" :key="item.id">
                 <a :href="item.linkUrl">
-                  <img :src="item.picUrl" />
+                  <img @load="loadImage" :src="item.picUrl" />
                 </a>
               </div>
             </m-slider>
@@ -79,6 +79,15 @@ export default {
         .catch(rej => {
           log(rej)
         })
+    },
+    loadImage() {
+      // 为了保证轮播图的加载后高度才是正常的，在这里刷新一下 BScroll
+      // 防止 BScroll 滚动出现问题。但是并不需要这样做，因为轮播图高度
+      // 已经通过 padding-bottom 撑开了，m-scroll 的滚动高度已经是正常的了
+      // if (!this.checkLoaded) {
+      //   this.$refs.scroll.refresh()
+      //   this.checkLoaded = true
+      // }
     }
   }
 }
