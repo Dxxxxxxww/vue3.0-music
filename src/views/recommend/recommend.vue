@@ -41,9 +41,9 @@ import { getRecommend, getDiscList } from '@/api/recommend'
 import MSlider from '@components/m-slider/index'
 import MScroll from '@components/m-scroll/index'
 import Loading from '@components/loading/loading'
-import config from '@/config/config'
+import { HttpCode } from '@/lib/enum'
 
-const { ERR_OK } = config.code
+const { ERR_OK } = HttpCode
 const { log } = console
 
 export default {

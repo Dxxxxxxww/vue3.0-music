@@ -7,10 +7,8 @@ const config = {
     format: 'jsonp'
   },
   options: {
-    param: 'jsonpCallback'
-  },
-  code: {
-    ERR_OK: 0
+    param: 'jsonpCallback',
+    prefix: 'jp'
   }
 }
 

@@ -37,7 +37,6 @@ export default {
   },
   methods: {
     _initScroll() {
-      console.log('say hello')
       if (!this.$refs.wrapper) {
         return
       }

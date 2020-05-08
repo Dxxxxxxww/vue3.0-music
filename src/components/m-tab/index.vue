@@ -40,8 +40,6 @@ export default {
     handleClick(e) {
       this.animatePos.left = e.target.offsetLeft + 'px'
       this.animatePos.top = e.target.offsetTop + 'px'
-      console.log(e.target.offsetLeft, this.animatePos.left)
-      console.log(e.target.offsetTop, this.animatePos.top)
     }
   }
 }

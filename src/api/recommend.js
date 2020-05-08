@@ -1,8 +1,9 @@
 import axios from 'axios'
 // import jsonp from '@/utils/jsonp'
 import config from '@/config/config'
+import { HttpCode } from '@/lib/enum'
 
-const { ERR_OK } = config.code
+const { ERR_OK } = HttpCode
 const debug = process.env.NODE_ENV !== 'production'
 
 /**
@@ -81,6 +82,7 @@ const getRecommend = function() {
       // 展开一下，如果在 api 中进行判断接口是否正常返回，如果正常就返回 Promise.resolve() 不正常返回 Promise.reject()
       // 这样在 .vue 文件里就可以在 then 中进行 正确的判断， catch 里进行 错误提示(这种处理方式感觉 api 就不够纯粹，又感觉 res.code 的判断本来就应该在这里进行，.vue 文件只接受数据，不管是正常数据还是不正常数据。)
       // 但是如果 api 接口直接返回 res.data 的话，在 .vue 文件里进行 res.code 的判断，那么接口是否正常返回的判断，业务进行还是错误提示都要在 then 里进行处理。(这种方式的话 api 都是返回数据，比较 ”纯粹“？)。具体哪种方式更好不好说。
+      // 个人比较喜欢 code 在这里判断
     })
   // .catch(rej => {
   //   console.log('rej', rej)
