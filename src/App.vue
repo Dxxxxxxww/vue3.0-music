@@ -10,8 +10,8 @@
 
 <script>
 // @ is an alias to /src
-import MHeader from '@components/m-header/index'
-import MTab from '@components/m-tab/index'
+import MHeader from './views/header/index'
+import MTab from './views/tab/index'
 
 export default {
   name: 'App',

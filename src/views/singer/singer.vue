@@ -1,21 +1,23 @@
 <template>
-  <div class="singer"></div>
+  <div class="singer">
+    <m-listview :data="singers"></m-listview>
+  </div>
 </template>
 
 <script>
 import { getSingerList } from '@/api/singer'
 import { HttpCode } from '@/lib/enum'
 import Singer from '@/lib/Singer'
-// import MScroll from '@components/m-scroll/index'
+import MListview from '@components/m-listview/index'
 
-const { log } = console
+// const { log } = console
 const HOT_NAME = '热门'
 const HOT_SINGER_LEN = 10
 
 export default {
   name: 'Singer',
   components: {
-    // MScroll
+    MListview
   },
   data() {
     return {
@@ -29,8 +31,7 @@ export default {
     _getSingerList() {
       getSingerList().then(res => {
         if (res.code === HttpCode.ERR_OK) {
-          this.singers = res.data.list
-          this._normalizeSinger(this.singers)
+          this.singers = this._normalizeSinger(res.data.list)
         }
       })
     },
@@ -62,7 +63,6 @@ export default {
         }
         map[key].items.push(new Singer(v.Fsinger_mid, v.Fsinger_name))
       })
-      log('map', map)
       // 这里的 map 是对象，不能保证是有序的
       // 处理 map 得到有序数据
       const hot = [],
@@ -80,7 +80,6 @@ export default {
       ret.sort((a, b) => {
         return a.title.charCodeAt(0) - b.title.charCodeAt(0)
       })
-      log(hot.concat(ret))
       return hot.concat(ret)
     }
   }
