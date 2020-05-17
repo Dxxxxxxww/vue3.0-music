@@ -24,4 +24,18 @@ const hasClass = (el, className) => {
   return reg.test(el.className)
 }
 
-export { addClass, hasClass }
+const getDomData = (el, name) => {
+  const prefix = 'data-'
+  return el.getAttribute(prefix + name)
+}
+const setDomData = (el, name, val) => {
+  const prefix = 'data-'
+  if (val) {
+    el.setAttribute(prefix + name, val)
+    return true
+  } else {
+    return false
+  }
+}
+
+export { addClass, hasClass, getDomData, setDomData }
