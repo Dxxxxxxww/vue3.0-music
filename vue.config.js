@@ -7,6 +7,12 @@ const resolve = dir => {
 
 module.exports = {
   devServer: {
+    proxy: {
+      '/v1': {
+        target: 'http://localhost:8000',
+        secure: false
+      }
+    },
     before(app) {
       app.get('/api/getTopBanner', (req, res) => {
         const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'

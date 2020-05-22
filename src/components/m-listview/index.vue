@@ -70,7 +70,8 @@ export default {
   data() {
     return {
       currentIndex: 0,
-      scrollY: 0
+      scrollY: 0,
+      heightList: []
     }
   },
   computed: {
@@ -88,11 +89,14 @@ export default {
     },
     scrollY(nv) {
       const y = nv
+      // 当滚动到顶部
       if (y > 0) {
         this.currentIndex = 0
         return
       }
-      for (let i = 0, len = this.heightList.length; i < len; i++) {
+      // 当滚动到中间部分
+      // heightList 的长度比元素长度长 1 线段端点与线的关系
+      for (let i = 0, len = this.heightList.length - 1; i < len; i++) {
         const left = this.heightList[i],
           right = this.heightList[i + 1]
         if (-y >= left && -y < right) {
@@ -100,7 +104,7 @@ export default {
           return
         }
       }
-      // 大于最后一个值的上限 -1 是下限
+      // 当滚动到最后 大于最后一个值的上限 -1 是下限
       this.currentIndex = this.heightList.length - 2
     }
   },
@@ -144,6 +148,7 @@ export default {
       this.scrollY = y
     },
     _getHeightList() {
+      console.log('_getHeightList')
       this.heightList = []
       let height = 0
       this.heightList.push(height)
@@ -153,6 +158,17 @@ export default {
       }
     },
     _scrollTo(index) {
+      if (!index && index !== 0) {
+        return
+      }
+      if (index < 0) {
+        index = 0
+      } else if (index > this.heightList.length - 2) {
+        index = this.heightList.length - 2
+      }
+      // 当点击 letter 的时候 scroll 滚动不触发，则手动赋值 scrollY
+      // 当前版本 bscroll 会触发
+      // this.scrollY = -this.heightList[index]
       this.$refs.scroll.scrollToElem(this.$refs.listGroup[index])
     }
   }
@@ -206,6 +222,6 @@ export default {
       text-align center
       font-size $font-size-small-s
       color $color-text-n
-    .current
-      color red
+      &.current
+        color $color-theme
 </style>
