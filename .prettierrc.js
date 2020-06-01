@@ -3,5 +3,5 @@ module.exports = {
   semi: false,
   useTabs: false,
   bracketSpacing: true,
-  endOfLine: "crlf"
-};
+  endOfLine: 'crlf'
+}

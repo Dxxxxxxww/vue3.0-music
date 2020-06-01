@@ -1,10 +1,11 @@
 <template>
   <div class="singer">
-    <m-listview :data="singers"></m-listview>
+    <m-listview :data="singersRef"></m-listview>
   </div>
 </template>
 
 <script>
+import { ref, onMounted } from 'vue'
 import { getSingerList } from '@/api/singer'
 import { HttpCode } from '@/lib/enum'
 import Singer from '@/lib/Singer'
@@ -24,18 +25,19 @@ export default {
       singers: []
     }
   },
-  created() {
-    this._getSingerList()
-  },
-  methods: {
-    _getSingerList() {
+  setup() {
+    const singersRef = ref([])
+    onMounted(_getSingerList)
+
+    function _getSingerList() {
       getSingerList().then(res => {
         if (res.code === HttpCode.ERR_OK) {
-          this.singers = this._normalizeSinger(res.data.list)
+          singersRef.value = _normalizeSinger(res.data.list)
         }
       })
-    },
-    _normalizeSinger(list) {
+    }
+
+    function _normalizeSinger(list) {
       const map = {
         hot: {
           title: HOT_NAME,
@@ -82,6 +84,8 @@ export default {
       })
       return hot.concat(ret)
     }
+
+    return { singersRef }
   }
 }
 </script>

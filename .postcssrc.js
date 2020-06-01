@@ -19,7 +19,7 @@ module.exports = {
     // cssnano: {
     //   //主要用来压缩和清理CSS代码。在Webpack中，cssnano和css-loader捆绑在一起，所以不需要自己加载它。
     //   preset: 'advanced', //重复调用
-    autoprefixer: {} //cssnext和cssnano都具有autoprefixer,事实上只需要一个，所以把默认的autoprefixer删除掉，然后把cssnano中的autoprefixer设置为false。
+    autoprefixer: {} // cssnext和cssnano都具有autoprefixer,事实上只需要一个，所以把默认的autoprefixer删除掉，然后把cssnano中的autoprefixer设置为false。
     //   'postcss-zindex': false //只要启用了这个插件，z-index的值就会重置为1
     // }
   }

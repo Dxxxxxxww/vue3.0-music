@@ -1,10 +1,10 @@
 import '@babel/polyfill'
-import Vue from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
 import fastclick from 'fastclick'
-import VueLazyload from 'vue-lazyload'
+// import VueLazyload from 'vue-lazyload'
 
 import '@styles/index.styl'
 
@@ -24,14 +24,10 @@ fastclick.prototype.focus = function(targetElement) {
   }
 }
 fastclick.attach(document.body)
-Vue.use(VueLazyload, {
-  loading: require('@/assets/img/logo@2x.png')
-})
 
-Vue.config.productionTip = false
-
-new Vue({
-  router,
-  store,
-  render: h => h(App)
-}).$mount('#app')
+// VueLazyload 目前不支持 vue3.0
+// .use(VueLazyload, { loading: require('@/assets/img/logo@2x.png') })
+createApp(App)
+  .use(router)
+  .use(store)
+  .mount('#app')

@@ -1,29 +1,29 @@
-console.log('start')
-async function getName(params) {
-  console.log('aoliao', new Date().getSeconds())
-  // await async2()
-  await setTimeout(() => {
-    console.log('name', new Date().getSeconds())
-  }, 12000)
-  console.log('wahaha')
-  await getSleep()
-  console.log('jianlibao', new Date().getSeconds())
-  await setTimeout(() => {
-    console.log('name2', new Date().getSeconds())
-  }, 2000)
-}
-async function getSleep() {
-  const res = await axios.get('/v1/token/sleep')
-  console.log(res)
-}
-function getAge() {
-  getName()
-  Promise.resolve('aaa').then(res => {
-    console.log(res)
-  })
-  console.log('age')
-}
-getAge()
+// console.log('start')
+// async function getName(params) {
+//   console.log('aoliao', new Date().getSeconds())
+//   // await async2()
+//   await setTimeout(() => {
+//     console.log('name', new Date().getSeconds())
+//   }, 12000)
+//   console.log('wahaha')
+//   await getSleep()
+//   console.log('jianlibao', new Date().getSeconds())
+//   await setTimeout(() => {
+//     console.log('name2', new Date().getSeconds())
+//   }, 2000)
+// }
+// async function getSleep() {
+//   const res = await axios.get('/v1/token/sleep')
+//   console.log(res)
+// }
+// function getAge() {
+//   getName()
+//   Promise.resolve('aaa').then(res => {
+//     console.log(res)
+//   })
+//   console.log('age')
+// }
+// getAge()
 // 第一轮
 // 执行栈  start, aoliao, age
 // 微任务 wahaha以及后续, aaa

@@ -1,12 +1,9 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import Mine from '@views/mine/mine'
 import Recommend from '@views/recommend/recommend'
 import SocialContact from '@views/social-contact/social-contact/'
 import Singer from '@views/singer/singer'
 import Rank from '@views/rank/rank'
-
-Vue.use(VueRouter)
 
 const routes = [
   {
@@ -35,7 +32,8 @@ const routes = [
   }
 ]
 
-const router = new VueRouter({
+const router = createRouter({
+  history: createWebHashHistory(),
   routes
 })
 
