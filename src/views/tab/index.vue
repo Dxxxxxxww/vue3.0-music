@@ -55,13 +55,11 @@ export default {
   align-items center
   height 44px
   padding 0 10px
-  color $color-text-g
+  color $color-text-n
   .detail, .search
-    z-index 1
     font-size $font-size-medium-x
     color $color-text
   .tab-item
-    z-index 1
     display inline-block
     // 设定宽高防止抖动
     width 44px

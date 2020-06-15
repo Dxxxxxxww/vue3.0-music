@@ -1,15 +1,18 @@
 <template>
   <div class="singer">
-    <m-listview :data="singersRef"></m-listview>
+    <m-listview :data="singersRef" @select="handleSelect"></m-listview>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import { getSingerList } from '@/api/singer'
 import { HttpCode } from '@/lib/enum'
 import Singer from '@/lib/Singer'
-import MListview from '@components/m-listview/index'
+import MListview from './singer-compontets/m-listview'
 
 // const { log } = console
 const HOT_NAME = '热门'
@@ -20,14 +23,13 @@ export default {
   components: {
     MListview
   },
-  data() {
-    return {
-      singers: []
-    }
-  },
   setup() {
     const singersRef = ref([])
+    const router = useRouter()
+    const store = useStore()
     onMounted(_getSingerList)
+    // 可以直接在 setup 里调用
+    // _getSingerList()
 
     function _getSingerList() {
       getSingerList().then(res => {
@@ -85,7 +87,12 @@ export default {
       return hot.concat(ret)
     }
 
-    return { singersRef }
+    const handleSelect = singer => {
+      store.commit('singerModule/setSinger', singer)
+      router.push({ path: `/singer/${singer.id}` })
+    }
+
+    return { singersRef, handleSelect }
   }
 }
 </script>
@@ -93,7 +100,7 @@ export default {
 <style scoped lang="stylus">
 .singer
   position fixed;
-  top: 88px;
+  top: 44px;
   width 100%;
   bottom 0;
 </style>

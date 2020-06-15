@@ -1,9 +1,10 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import Mine from '@views/mine/mine'
-import Recommend from '@views/recommend/recommend'
-import SocialContact from '@views/social-contact/social-contact/'
-import Singer from '@views/singer/singer'
-import Rank from '@views/rank/rank'
+import Recommend from '@views/recommend/Recommend'
+const Mine = () => import('@views/mine/Mine')
+const SocialContact = () => import('@views/social-contact/SocialContact')
+const Singer = () => import('@views/singer/Singer')
+const SingerDetail = () => import('@views/singer-detail/SingerDetail')
+const Rank = () => import('@views/rank/Rank')
 
 const routes = [
   {
@@ -12,19 +13,30 @@ const routes = [
   },
   {
     path: '/mine',
+    name: 'Mine',
     component: Mine
   },
   {
     path: '/recommend',
+    name: 'Recommend',
     component: Recommend
   },
   {
     path: '/social-contact',
+    name: 'SocialContact',
     component: SocialContact
   },
   {
     path: '/singer',
-    component: Singer
+    name: 'Singer',
+    component: Singer,
+    children: [
+      {
+        path: ':id',
+        name: 'SingerDetail',
+        component: SingerDetail
+      }
+    ]
   },
   {
     path: '/rank',

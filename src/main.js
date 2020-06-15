@@ -4,6 +4,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import fastclick from 'fastclick'
+import '@/router/beforeEach.js'
 // import VueLazyload from 'vue-lazyload'
 
 import '@styles/index.styl'

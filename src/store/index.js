@@ -1,8 +1,8 @@
 import Vuex from 'vuex'
+import singerModule from './singer-module'
 
 export default Vuex.createStore({
-  state: {},
-  mutations: {},
-  actions: {},
-  modules: {}
+  modules: {
+    singerModule
+  }
 })

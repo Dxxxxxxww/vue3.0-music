@@ -73,7 +73,7 @@ const getRecommend = function() {
     .then(res => {
       return res.data
       // return Promise.reject(res.data)
-      // 这里的 reject可以在下面 catch 住，也可以在 .vue 中 catch，但是在下面 catch住的话， .vue 里的 then 中处理函数如果访问了 res 中的内容就会报错 TypeError: Cannot read property 'code' of undefined
+      // 这里的 reject可以在下面 catch 住，也可以在 .vue 中 catch，但是在下面 catch住的话， .vue 里的 then 中处理函数如果访问了 res 中的内容就会报错 TypeError: Cannot read property 'code' of undefined, 这样的话，.vue 里还是需要一个 catch
       // 所以还是在 .vue 里 catch 的好，不报错，也符合逻辑(api 就纯粹是 model 层，不带有 view)。
 
       // if (res.code === 0) {
@@ -82,7 +82,7 @@ const getRecommend = function() {
       // 展开一下，如果在 api 中进行判断接口是否正常返回，如果正常就返回 Promise.resolve() 不正常返回 Promise.reject()
       // 这样在 .vue 文件里就可以在 then 中进行 正确的判断， catch 里进行 错误提示(这种处理方式感觉 api 就不够纯粹，又感觉 res.code 的判断本来就应该在这里进行，.vue 文件只接受数据，不管是正常数据还是不正常数据。)
       // 但是如果 api 接口直接返回 res.data 的话，在 .vue 文件里进行 res.code 的判断，那么接口是否正常返回的判断，业务进行还是错误提示都要在 then 里进行处理。(这种方式的话 api 都是返回数据，比较 ”纯粹“？)。具体哪种方式更好不好说。
-      // 个人比较喜欢 code 在这里判断
+      // --删除--个人比较喜欢 code 在这里判断--删除--
     })
   // .catch(rej => {
   //   console.log('rej', rej)
