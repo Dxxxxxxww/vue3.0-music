@@ -1,14 +1,33 @@
 <template>
   <div class="song-list">
-    <ul></ul>
+    <ul>
+      <li v-for="(song, index) of songs" :key="index" class="item">
+        <div class="content">
+          <h2 class="name">{{ song.name }}</h2>
+          <p class="desc">{{ getDesc(song) }}</p>
+        </div>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
 export default {
   name: '',
-  data() {
-    return {}
+  props: {
+    songs: {
+      type: Array,
+      default() {
+        return []
+      }
+    }
+  },
+  setup(props) {
+    function getDesc(song) {
+      return `${song.singer} 。${song.album}`
+    }
+
+    return { getDesc }
   }
 }
 </script>
@@ -24,4 +43,15 @@ export default {
     box-sizing border-box
     height 64px
     font-size $font-size-medium
+    .content
+      flex: 1
+      line-height: 20px
+      overflow: hidden
+      .name
+        no-wrap()
+        color: $color-text
+      .desc
+        no-wrap()
+        margin-top: 4px
+        color: $color-text-d
 </style>

@@ -5,7 +5,6 @@
     ref="scrollRef"
     :probe-type="probeType"
     :listen-scroll="true"
-    :click="false"
     @scroll="handleScroll"
   >
     <ul>
@@ -21,7 +20,7 @@
             class="list-group-item"
             v-for="item of group.items"
             :key="item.id"
-            @click.prevent="handleClickItem(item)"
+            @click="handleClickItem(item)"
           >
             <img class="avatar" :src="item.avatar" />
             <span class="name">{{ item.name }}</span>

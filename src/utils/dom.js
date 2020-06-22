@@ -38,4 +38,36 @@ const setDomData = (el, name, val) => {
   }
 }
 
-export { addClass, hasClass, getDomData, setDomData }
+const elementStyle = document.createElement('div').style
+
+const vender = (() => {
+  const transformNames = {
+    webkit: 'webkitTransform',
+    Moz: 'MozTransform',
+    O: 'OTransform',
+    ms: 'msTransform',
+    standard: 'transform'
+  }
+
+  for (const key in transformNames) {
+    if (elementStyle[transformNames[key]] !== undefined) {
+      return key
+    }
+  }
+
+  return ''
+})()
+
+const prefixStyle = style => {
+  if (!vender) {
+    return ''
+  }
+  console.log(vender)
+  if (vender === 'standard') {
+    return style
+  }
+
+  return vender + style[0].toUpperCase() + style.substr(1)
+}
+
+export { addClass, hasClass, getDomData, setDomData, prefixStyle }

@@ -7,6 +7,9 @@
 <script>
 import BScroll from 'better-scroll'
 
+const DIRECTION_H = 'horizontal'
+const DIRECTION_V = 'vertical'
+
 export default {
   name: '',
   props: {
@@ -16,7 +19,7 @@ export default {
     },
     click: {
       type: Boolean,
-      default: true
+      default: false
     },
     data: {
       type: Array,
@@ -27,6 +30,14 @@ export default {
     listenScroll: {
       type: Boolean,
       default: false
+    },
+    direction: {
+      type: String,
+      default: DIRECTION_V
+    },
+    directionLockThreshold: {
+      type: Number,
+      default: 0
     }
   },
   watch: {
@@ -48,7 +59,10 @@ export default {
       }
       this.scroll = new BScroll(this.$refs.wrapper, {
         probeType: this.probeType,
-        click: this.click
+        click: this.click,
+        eventPassthrough:
+          this.direction === DIRECTION_V ? DIRECTION_H : DIRECTION_V,
+        directionLockThreshold: this.directionLockThreshold
       })
 
       if (this.listenScroll) {

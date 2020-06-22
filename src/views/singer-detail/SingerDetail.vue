@@ -1,5 +1,5 @@
 <template>
-  <transition name="slide">
+  <transition appear name="slide">
     <music-list
       :songs="songsRef"
       :title="singer.name"
@@ -70,4 +70,10 @@ export default {
 }
 </script>
 
-<style scoped lang="stylus"></style>
+<style scoped lang="stylus">
+.slide-enter-active, .slide-leave-active
+  transition: all 0.3s
+
+.slide-enter, .slide-leave-to
+  transform: translate3d(100%, 0, 0)
+</style>
