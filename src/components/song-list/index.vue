@@ -1,7 +1,12 @@
 <template>
   <div class="song-list">
     <ul>
-      <li v-for="(song, index) of songs" :key="index" class="item">
+      <li
+        @click="selectItem(song, index)"
+        v-for="(song, index) of songs"
+        :key="index"
+        class="item"
+      >
         <div class="content">
           <h2 class="name">{{ song.name }}</h2>
           <p class="desc">{{ getDesc(song) }}</p>
@@ -13,7 +18,7 @@
 
 <script>
 export default {
-  name: '',
+  name: 'SongList',
   props: {
     songs: {
       type: Array,
@@ -22,12 +27,16 @@ export default {
       }
     }
   },
-  setup(props) {
+  setup(props, context) {
     function getDesc(song) {
       return `${song.singer} 。${song.album}`
     }
 
-    return { getDesc }
+    const selectItem = (item, idx) => {
+      context.emit('select', { item, idx })
+    }
+
+    return { getDesc, selectItem }
   }
 }
 </script>

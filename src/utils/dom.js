@@ -62,7 +62,7 @@ const prefixStyle = style => {
   if (!vender) {
     return ''
   }
-  console.log(vender)
+
   if (vender === 'standard') {
     return style
   }

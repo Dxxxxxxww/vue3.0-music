@@ -1,5 +1,5 @@
 import Vuex from 'vuex'
-import singerModule from './singer-module'
+import singerModule from './singerModule'
 
 export default Vuex.createStore({
   modules: {

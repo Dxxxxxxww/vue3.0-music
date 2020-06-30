@@ -27,7 +27,8 @@ export default {
   setup() {
     const store = useStore()
     const router = useRouter()
-    const singer = store.getters['singerModule/singer']
+    const singer = store.state.singerModule.singer
+
     const songsRef = ref([])
     watch(
       () => singer,

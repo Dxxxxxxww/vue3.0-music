@@ -1,6 +1,6 @@
 import axios from 'axios'
 // import jsonp from '@/utils/jsonp'
-import config from '@/config/config'
+import { commonParams } from '@/config/config'
 import { HttpCode } from '@/lib/enum'
 
 const { ERR_OK } = HttpCode
@@ -13,7 +13,7 @@ const getRecommend = function() {
   const url = debug
     ? '/api/getTopBanner'
     : 'http://ustbhuangyi.com/music/api/getTopBanner'
-  const data = Object.assign({}, config.commonParams, {
+  const data = Object.assign({}, commonParams, {
     platform: 'yqq.json',
     hostUin: 0,
     needNewCode: 0,
@@ -97,7 +97,7 @@ const getDiscList = function() {
     ? '/api/getDiscList'
     : 'http://ustbhuangyi.com/music/api/getTopBanner'
 
-  const data = Object.assign({}, config.commonParams, {
+  const data = Object.assign({}, commonParams, {
     platform: 'yqq',
     hostUin: 0,
     sin: 0,

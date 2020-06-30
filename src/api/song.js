@@ -1,4 +1,4 @@
-import config from '@/config/config'
+import { commonParams } from '@/config/config'
 import { getUid } from '@/utils/uid'
 import axios from 'axios'
 import { HttpCode } from '@/lib/enum'
@@ -9,7 +9,7 @@ const { ERR_OK } = HttpCode
 export function getLyric(mid) {
   const url = debug ? '/api/lyric' : 'http://ustbhuangyi.com/music/api/lyric'
 
-  const data = Object.assign({}, config.commonParams, {
+  const data = Object.assign({}, commonParams, {
     songmid: mid,
     platform: 'yqq',
     hostUin: 0,
@@ -43,7 +43,7 @@ export function getSongsUrl(songs) {
 
   const urlMid = genUrlMid(mids, types)
 
-  const data = Object.assign({}, config.commonParams, {
+  const data = Object.assign({}, commonParams, {
     g_tk: 5381,
     format: 'json',
     platform: 'h5',

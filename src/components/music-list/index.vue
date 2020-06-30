@@ -27,7 +27,7 @@
       @scroll="handleScroll"
     >
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list @select="selectItem" :songs="songs"></song-list>
       </div>
       <div class="loading-container" v-show="!songs.length">
         <loading></loading>
@@ -38,6 +38,7 @@
 
 <script>
 import { ref, computed, watch, onMounted } from 'vue'
+import { useStore } from 'vuex'
 import { prefixStyle } from '@/utils/dom.js'
 import MScroll from '@/components/m-scroll/index.vue'
 import SongList from '@/components/song-list/index.vue'
@@ -66,10 +67,8 @@ export default {
     }
   },
   setup(props) {
-    const listRef = ref(null)
     const bgImageRef = ref(null)
     const layerRef = ref(null)
-    const filterRef = ref(null)
     const probeType = 3
     let minTransalteY = 0
     const scrollTopEnd = ref(true)
@@ -78,6 +77,7 @@ export default {
     const showPlayBtnRef = computed(
       () => !!props.songs.length && scrollTopEnd.value
     )
+    const filterRef = ref(null)
 
     watch(scrollY, (cur, pre) => {
       // 这里可以用 Math.max 学到了，如果识我就会 if 判断是否执行 transform 赋值
@@ -115,6 +115,7 @@ export default {
       bgImageRef.value.style.zIndex = zIndex
     })
 
+    const listRef = ref(null)
     onMounted(() => {
       listRef.value.$el.style.top = `${bgImageRef.value.clientHeight}px`
       minTransalteY = -bgImageRef.value.clientHeight + RESERVED_HEIGHT
@@ -129,6 +130,12 @@ export default {
       this.$router.back()
     }
 
+    const store = useStore()
+    function selectItem({ item, index }) {
+      store.dispatch('singerModule/selectPlay', { songs: props.songs, index })
+      console.log(item, index)
+    }
+
     return {
       bgStyleRef,
       listRef,
@@ -138,7 +145,8 @@ export default {
       probeType,
       filterRef,
       handleScroll,
-      back
+      back,
+      selectItem
     }
   },
   components: {
