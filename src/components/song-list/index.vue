@@ -32,8 +32,8 @@ export default {
       return `${song.singer} 。${song.album}`
     }
 
-    const selectItem = (item, idx) => {
-      context.emit('select', { item, idx })
+    const selectItem = (item, index) => {
+      context.emit('select', { item, index })
     }
 
     return { getDesc, selectItem }

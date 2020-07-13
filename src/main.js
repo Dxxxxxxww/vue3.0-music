@@ -6,6 +6,7 @@ import store from './store'
 import fastclick from 'fastclick'
 import '@/router/beforeEach.js'
 // import VueLazyload from 'vue-lazyload'
+import lazyPlugin from 'vue3-lazy'
 
 import '@styles/index.styl'
 
@@ -31,4 +32,8 @@ fastclick.attach(document.body)
 createApp(App)
   .use(router)
   .use(store)
+  .use(lazyPlugin, {
+    loading: require('@/assets/img/logo@2x.png'),
+    error: require('@/assets/img/logo@2x.png')
+  })
   .mount('#app')

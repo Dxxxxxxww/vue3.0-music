@@ -13,6 +13,9 @@
     <router-link tag="div" class="tab-item" to="/singer">
       <span class="tab-link" @click="handleClick($event)">歌手</span>
     </router-link>
+    <router-link tag="div" class="tab-item" to="/test">
+      <span class="tab-link" @click="handleClick($event)">Test</span>
+    </router-link>
     <div class="search icon-search" @click="handleClick($event)"></div>
     <div class="animate" :style="[animatePos]">
       <!-- <click-ripple></click-ripple> -->
@@ -67,10 +70,11 @@ export default {
     line-height 30px
     text-align center
     font-size $font-size-medium-x
+    .tab-link
+      display inline-block
     &.router-link-active
       .tab-link
-        transform: translate3d(0, 0, 0)
-        font-size $font-size-large-x
+        transform: translate3d(0, 0, 0) scale(1.4)
         color $color-text
         transition all .1s cubic-bezier(.17, .86, .73, .14)
   .animate

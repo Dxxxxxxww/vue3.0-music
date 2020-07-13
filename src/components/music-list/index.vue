@@ -132,8 +132,8 @@ export default {
 
     const store = useStore()
     function selectItem({ item, index }) {
-      store.dispatch('singerModule/selectPlay', { songs: props.songs, index })
-      console.log(item, index)
+      // store.commit('singerModule/setPlayList', props.songs)
+      store.dispatch('singerModule/selectPlay', { list: props.songs, index })
     }
 
     return {

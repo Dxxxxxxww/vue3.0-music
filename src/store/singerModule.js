@@ -1,4 +1,5 @@
 import { playMode } from '@/config/config'
+import * as types from './singerModuleType'
 
 export default {
   namespaced: true,
@@ -12,40 +13,43 @@ export default {
     currentIndex: -1
   }),
   mutations: {
-    setSinger(state, singer) {
+    [types.SET_SINGER](state, singer) {
       state.singer = singer
     },
-    setPlaying(state, flag) {
+    [types.SET_PLAYING](state, flag) {
       state.playing = flag
     },
-    setFullScreen(state, flag) {
+    [types.SET_FULL_SCREEN](state, flag) {
       state.fullScreen = flag
     },
-    setPlayList(state, list) {
+    [types.SET_PLAY_LIST](state, list) {
       state.playList = list
     },
-    setSequenceList(state, list) {
+    [types.SET_SEQUENCE_LIST](state, list) {
       state.sequenceList = list
     },
-    setPlayMode(state, mode) {
+    [types.SET_PLAY_MODE](state, mode) {
       state.playMode = mode
     },
-    setCurrentIndex(state, index) {
+    [types.SET_CURRENT_INDEX](state, index) {
       state.currentIndex = index
     }
   },
   actions: {
     selectPlay({ commit, state }, { list, index }) {
-      commit('setSequenceList', list)
-      commit('setPlayList', list)
-      commit('setCurrentIndex', index)
-      commit('setFullScreen', true)
-      commit('setPlaying', true)
+      commit(types.SET_SEQUENCE_LIST, list)
+      commit(types.SET_PLAY_LIST, list)
+      commit(types.SET_CURRENT_INDEX, index)
+      commit(types.SET_FULL_SCREEN, true)
+      commit(types.SET_PLAYING, true)
     }
   },
   getters: {
     currentSong(state) {
       return state.playList[state.currentIndex] || {}
+    },
+    playing(state) {
+      return state.playing
     }
   }
 }

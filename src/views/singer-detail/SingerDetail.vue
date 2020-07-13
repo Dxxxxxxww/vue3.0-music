@@ -20,7 +20,7 @@ import MusicList from '@/components/music-list/index.vue'
 const { ERR_OK } = HttpCode
 
 export default {
-  name: '',
+  name: 'SingerDetail',
   components: {
     MusicList
   },
@@ -49,7 +49,6 @@ export default {
           processSongsUrl(_normalizeSongs(result.data.list)).then(songs => {
             songsRef.value = songs
           })
-          console.log(songsRef)
         }
       } catch (error) {
         console.log(error)
@@ -73,8 +72,8 @@ export default {
 
 <style scoped lang="stylus">
 .slide-enter-active, .slide-leave-active
-  transition: all 0.3s
+  transition all 0.3s
 
 .slide-enter, .slide-leave-to
-  transform: translate3d(100%, 0, 0)
+  transform translate3d(100%, 0, 0)
 </style>

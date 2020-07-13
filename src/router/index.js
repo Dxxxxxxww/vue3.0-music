@@ -5,6 +5,7 @@ const SocialContact = () => import('@views/social-contact/SocialContact')
 const Singer = () => import('@views/singer/Singer')
 const SingerDetail = () => import('@views/singer-detail/SingerDetail')
 const Rank = () => import('@views/rank/Rank')
+const Test = () => import('@views/test-tab/Test')
 
 const routes = [
   {
@@ -41,6 +42,10 @@ const routes = [
   {
     path: '/rank',
     component: Rank
+  },
+  {
+    path: '/test',
+    component: Test
   }
 ]
 
