@@ -32,14 +32,14 @@
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
-            <div class="icon i-left">
-              <i class="icon-prev"></i>
+            <div class="icon i-left" :class="disableCls">
+              <i class="icon-prev" @click="prevSong"></i>
             </div>
-            <div class="icon i-center">
+            <div class="icon i-center" :class="disableCls">
               <i :class="playIcon" @click="togglePlaying"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon-next"></i>
+            <div class="icon i-right" :class="disableCls">
+              <i class="icon-next" @click="nextSong"></i>
             </div>
             <div class="icon i-right">
               <i class="icon-not-favorite"></i>
@@ -65,7 +65,12 @@
         </div>
       </div>
     </transition>
-    <audio ref="audioRef" :src="currentSong.url"></audio>
+    <audio
+      ref="audioRef"
+      :src="currentSong.url"
+      @playing="ready"
+      @error="error"
+    ></audio>
   </div>
 </template>
 
@@ -90,11 +95,15 @@ export default {
     const {
       audioRef,
       currentSong,
-      playing,
       playIcon,
       miniIcon,
       cdCls,
-      togglePlaying
+      togglePlaying,
+      nextSong,
+      prevSong,
+      ready,
+      error,
+      disableCls
     } = usePlayMusic(store)
 
     return {
@@ -109,11 +118,15 @@ export default {
       afterLeave,
       cdWrapper,
       audioRef,
-      playing,
       playIcon,
       miniIcon,
       cdCls,
-      togglePlaying
+      togglePlaying,
+      nextSong,
+      prevSong,
+      ready,
+      error,
+      disableCls
     }
   }
 }
@@ -143,7 +156,7 @@ function useAnimation() {
         easing: 'linear'
       }
     })
-    // done 函数是 undefined vue3 bug？
+    // done is undefined vue3 bug？
     animations.runAnimation(cdWrapper.value, 'move', done)
   }
   function afterEnter() {
@@ -156,7 +169,7 @@ function useAnimation() {
       transform
     ] = `translate3d(${x}px, ${y}px, 0) scale(${scale})`
     const timeout = setTimeout(done, 400)
-    // done 函数是 undefined vue3 bug？
+    // done is undefined vue3 bug？
     cdWrapper.value.addEventListener('transitionend', () => {
       clearTimeout(timeout)
       done && done()
@@ -205,6 +218,7 @@ function usePlayMusic(store) {
   const miniIcon = computed(() =>
     playing.value ? 'icon-pause-mini' : 'icon-play-mini'
   )
+
   const cdCls = computed(() => (playing.value ? 'play' : 'play pause'))
 
   watch(currentSong, () => {
@@ -219,18 +233,69 @@ function usePlayMusic(store) {
     }, 0)
   })
 
+  const songReady = ref(true)
+  const disableCls = computed(() => (songReady.value ? '' : 'disable'))
   function togglePlaying() {
+    if (!songReady.value) {
+      return
+    }
     store.commit('singerModule/setPlaying', !playing.value)
+  }
+
+  const currentIndex = computed(() => store.state.singerModule.currentIndex)
+  const playList = computed(() => store.state.singerModule.playList)
+  function nextSong() {
+    if (!songReady.value) {
+      return
+    }
+    let index = currentIndex.value + 1
+    if (index === playList.value.length) {
+      index = 0
+    }
+    store.commit('singerModule/setCurrentIndex', index)
+    // 暂停情况下切歌，改成播放状态
+    if (!playing.value) {
+      togglePlaying()
+    }
+    songReady.value = false
+  }
+
+  function prevSong() {
+    if (!songReady.value) {
+      return
+    }
+    let index = currentIndex.value - 1
+    if (index === -1) {
+      index = playList.value.length - 1
+    }
+    store.commit('singerModule/setCurrentIndex', index)
+    // 暂停情况下切歌，改成播放状态
+    if (!playing.value) {
+      togglePlaying()
+    }
+    songReady.value = false
+  }
+
+  function ready() {
+    songReady.value = true
+  }
+
+  function error() {
+    songReady.value = true
   }
 
   return {
     audioRef,
     currentSong,
-    playing,
     playIcon,
     miniIcon,
     cdCls,
-    togglePlaying
+    togglePlaying,
+    nextSong,
+    prevSong,
+    ready,
+    error,
+    disableCls
   }
 }
 
