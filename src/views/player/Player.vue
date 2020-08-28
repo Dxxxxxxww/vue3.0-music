@@ -28,6 +28,10 @@
           </div>
         </div>
         <div class="bottom">
+          <div class="progress-wrapper">
+            <span class="time time-l">{{ format(currentTime) }}</span>
+            <span class="time time-r">{{ format(currentSong.duration) }}</span>
+          </div>
           <div class="operators">
             <div class="icon i-left">
               <i class="icon-sequence"></i>
@@ -69,6 +73,7 @@
       ref="audioRef"
       :src="currentSong.url"
       @playing="ready"
+      @timeupdate="updateTime"
       @error="error"
     ></audio>
   </div>
@@ -79,6 +84,7 @@ import { ref, computed, watch } from 'vue'
 import { useStore } from 'vuex'
 import animations from 'create-keyframe-animation'
 import { prefixStyle } from '@/utils/dom'
+import { format } from '@/utils/format'
 
 const transform = prefixStyle('transform')
 
@@ -106,6 +112,7 @@ export default {
       disableCls
     } = usePlayMusic(store)
 
+    const { currentTime, updateTime } = useDuration()
     return {
       fullScreen,
       playList,
@@ -126,7 +133,10 @@ export default {
       prevSong,
       ready,
       error,
-      disableCls
+      disableCls,
+      currentTime,
+      updateTime,
+      format
     }
   }
 }
@@ -299,6 +309,19 @@ function usePlayMusic(store) {
   }
 }
 
+function useDuration() {
+  const currentTime = ref(0)
+
+  function updateTime(e) {
+    currentTime.value = e.target.currentTime
+  }
+
+  return {
+    currentTime,
+    updateTime
+  }
+}
+
 function _getPosAndScale() {
   const targetWidth = 40
   const paddingLeft = 20
@@ -354,7 +377,7 @@ function _getPosAndScale() {
           display: block
           padding: 9px
           font-size: $font-size-large-x
-          color: $color-theme
+          color: $color-background-ll
           transform: rotate(-90deg)
       .title
         width: 70%
@@ -363,12 +386,12 @@ function _getPosAndScale() {
         text-align: center
         no-wrap()
         font-size: $font-size-large
-        color: $color-text
+        color: $color-background-ll
       .subtitle
         line-height: 20px
         text-align: center
         font-size: $font-size-medium
-        color: $color-text
+        color: $color-background-ll
     .middle
       position: fixed
       width: 100%
@@ -476,14 +499,17 @@ function _getPosAndScale() {
             text-align: right
         .progress-bar-wrapper
           flex: 1
+      .progress-wrapper
+        .time
+          color: $color-background-ll
       .operators
         display: flex
         align-items: center
         .icon
           flex: 1
-          color: $color-theme
+          color: $color-background-ll
           &.disable
-            color: $color-theme-d
+            color: $color-text-c
           i
             font-size: 30px
         .i-left
@@ -556,7 +582,7 @@ function _getPosAndScale() {
       padding: 0 10px
       .icon-play-mini, .icon-pause-mini, .icon-playlist
         font-size: 30px
-        color: $color-theme
+        color: $color-text
       .icon-mini
         font-size: 32px
         position: absolute

@@ -3,16 +3,16 @@
     <form action="" @scroll="submit"></form>
     <div @click="copyText">copy</div>
     <div @click="copyText">copy2</div>
-    <div class="border-right"></div>
   </div>
 </template>
 
 <script>
+// 点击按钮复制内容
 import { ref, onMounted } from 'vue'
 // import axios from 'axios'
 
 export default {
-  name: 'Mine',
+  name: 'Copy',
   data() {
     return {}
   },
@@ -109,21 +109,7 @@ export default {
 <style scoped lang="stylus">
 .btn
   height 20px
-  border 1px solid #ff8d00
+  border: 1px solid #ff8d00
   box-shadow none
-  background-color #ff8d00
-.border-right
-  height 20px
-  width 0
-  margin-left 20px
-  border-right 1px solid #000
-  // 这种写法能使动画闪烁表现成硬切闪烁 源自 css揭秘
-  animation blink 1s infinite steps(1)
-
-@keyframes blink {
-  50% {
-    // 这种写法能使动画闪烁表现成硬切闪烁
-    opacity 0
-  }
-}
+  background-color: #ff8d00
 </style>
