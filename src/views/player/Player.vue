@@ -30,6 +30,9 @@
         <div class="bottom">
           <div class="progress-wrapper">
             <span class="time time-l">{{ format(currentTime) }}</span>
+            <div class="progress-bar-wrapper">
+              <progress-bar class="progress-bar" :percent="percent" />
+            </div>
             <span class="time time-r">{{ format(currentSong.duration) }}</span>
           </div>
           <div class="operators">
@@ -85,11 +88,13 @@ import { useStore } from 'vuex'
 import animations from 'create-keyframe-animation'
 import { prefixStyle } from '@/utils/dom'
 import { format } from '@/utils/format'
+import ProgressBar from '@components/progress-bar'
 
 const transform = prefixStyle('transform')
 
 export default {
   name: 'Player',
+  components: { ProgressBar },
   setup(props, context) {
     const store = useStore()
     const playList = computed(() => store.state.singerModule.playList)
@@ -113,6 +118,11 @@ export default {
     } = usePlayMusic(store)
 
     const { currentTime, updateTime } = useDuration()
+
+    const percent = computed(
+      () => currentTime.value / currentSong.value.duration
+    )
+
     return {
       fullScreen,
       playList,
@@ -136,7 +146,8 @@ export default {
       disableCls,
       currentTime,
       updateTime,
-      format
+      format,
+      percent
     }
   }
 }
@@ -488,7 +499,7 @@ function _getPosAndScale() {
         margin: 0px auto
         padding: 10px 0
         .time
-          color: $color-text
+          color: $color-background-ll
           font-size: $font-size-small
           flex: 0 0 30px
           line-height: 30px
@@ -499,9 +510,6 @@ function _getPosAndScale() {
             text-align: right
         .progress-bar-wrapper
           flex: 1
-      .progress-wrapper
-        .time
-          color: $color-background-ll
       .operators
         display: flex
         align-items: center
