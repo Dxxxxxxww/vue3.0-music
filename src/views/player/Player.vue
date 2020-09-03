@@ -31,7 +31,11 @@
           <div class="progress-wrapper">
             <span class="time time-l">{{ format(currentTime) }}</span>
             <div class="progress-bar-wrapper">
-              <progress-bar class="progress-bar" :percent="percent" />
+              <progress-bar
+                class="progress-bar"
+                :percent="percent"
+                @percent-change="percentChange"
+              />
             </div>
             <span class="time time-r">{{ format(currentSong.duration) }}</span>
           </div>
@@ -114,7 +118,8 @@ export default {
       prevSong,
       ready,
       error,
-      disableCls
+      disableCls,
+      percentChange
     } = usePlayMusic(store)
 
     const { currentTime, updateTime } = useDuration()
@@ -147,7 +152,8 @@ export default {
       currentTime,
       updateTime,
       format,
-      percent
+      percent,
+      percentChange
     }
   }
 }
@@ -297,6 +303,13 @@ function usePlayMusic(store) {
     songReady.value = false
   }
 
+  function percentChange(percent) {
+    audioRef.value.currentTime = currentSong.value.duration * percent
+    if (!playing.value) {
+      togglePlaying()
+    }
+  }
+
   function ready() {
     songReady.value = true
   }
@@ -316,7 +329,8 @@ function usePlayMusic(store) {
     prevSong,
     ready,
     error,
-    disableCls
+    disableCls,
+    percentChange
   }
 }
 
