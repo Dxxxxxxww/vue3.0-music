@@ -68,8 +68,10 @@
           <h2 class="name" v-html="currentSong.name"></h2>
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
-        <div class="control">
-          <i :class="miniIcon" @click.stop="togglePlaying"></i>
+        <div class="control" @click.stop="togglePlaying">
+          <progress-circle :radius="32" :percent="percent">
+            <i class="icon-mini" :class="miniIcon"></i>
+          </progress-circle>
         </div>
         <div class="control">
           <i class="icon-playlist"></i>
@@ -93,12 +95,13 @@ import animations from 'create-keyframe-animation'
 import { prefixStyle } from '@/utils/dom'
 import { format } from '@/utils/format'
 import ProgressBar from '@components/progress-bar'
+import ProgressCircle from '@components/progress-circle/ProgressCircle'
 
 const transform = prefixStyle('transform')
 
 export default {
   name: 'Player',
-  components: { ProgressBar },
+  components: { ProgressBar, ProgressCircle },
   setup(props, context) {
     const store = useStore()
     const playList = computed(() => store.state.singerModule.playList)
@@ -603,7 +606,7 @@ function _getPosAndScale() {
       width: 30px
       padding: 0 10px
       .icon-play-mini, .icon-pause-mini, .icon-playlist
-        font-size: 30px
+        font-size: 32px
         color: $color-text
       .icon-mini
         font-size: 32px
