@@ -50,6 +50,9 @@ export default {
     },
     playing(state) {
       return state.playing
+    },
+    playMode(state) {
+      return state.playMode
     }
   }
 }

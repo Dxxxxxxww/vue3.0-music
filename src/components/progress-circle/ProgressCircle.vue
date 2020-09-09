@@ -44,10 +44,7 @@ export default {
   },
   setup(props) {
     const dashArray = ref(Math.PI * 50 * 2)
-    const dashOffset = computed(() => {
-      console.log(props.percent)
-      return (1 - props.percent) * dashArray.value
-    })
+    const dashOffset = computed(() => (1 - props.percent) * dashArray.value)
 
     return {
       dashArray,
@@ -66,8 +63,9 @@ export default {
     stroke-width 8px
     transform-origin: center
     &.progress-background
+      stroke-width 5px
       transform: scale(0.9)
-      stroke: transparent
+      stroke: $color-text
     &.progress-bar
       transform: scale(0.93) rotate(-90deg)
       stroke: $color-theme

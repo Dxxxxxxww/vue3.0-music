@@ -41,7 +41,7 @@
           </div>
           <div class="operators">
             <div class="icon i-left">
-              <i class="icon-sequence"></i>
+              <i :class="playModeIconClass" @click="changePlayMode"></i>
             </div>
             <div class="icon i-left" :class="disableCls">
               <i class="icon-prev" @click="prevSong"></i>
@@ -94,10 +94,12 @@ import { useStore } from 'vuex'
 import animations from 'create-keyframe-animation'
 import { prefixStyle } from '@/utils/dom'
 import { format } from '@/utils/format'
+import { playMode } from '@/config/config'
 import ProgressBar from '@components/progress-bar'
 import ProgressCircle from '@components/progress-circle/ProgressCircle'
 
 const transform = prefixStyle('transform')
+const { sequence, loop, random } = playMode
 
 export default {
   name: 'Player',
@@ -122,7 +124,9 @@ export default {
       ready,
       error,
       disableCls,
-      percentChange
+      percentChange,
+      playModeIconClass,
+      changePlayMode
     } = usePlayMusic(store)
 
     const { currentTime, updateTime } = useDuration()
@@ -156,7 +160,9 @@ export default {
       updateTime,
       format,
       percent,
-      percentChange
+      percentChange,
+      playModeIconClass,
+      changePlayMode
     }
   }
 }
@@ -306,6 +312,22 @@ function usePlayMusic(store) {
     songReady.value = false
   }
 
+  const playMode = computed(() => store.getters['singerModule/playMode'])
+  const playModeIconClass = computed(() =>
+    playMode.value === sequence
+      ? 'icon-sequence'
+      : playMode.value === loop
+        ? 'icon-loop'
+        : playMode.value === random
+          ? 'icon-random'
+          : ''
+  )
+
+  function changePlayMode() {
+    const mode = (playMode.value + 1) % 3
+    store.commit('singerModule/setPlayMode', mode)
+  }
+
   function percentChange(percent) {
     audioRef.value.currentTime = currentSong.value.duration * percent
     if (!playing.value) {
@@ -333,7 +355,9 @@ function usePlayMusic(store) {
     ready,
     error,
     disableCls,
-    percentChange
+    percentChange,
+    playModeIconClass,
+    changePlayMode
   }
 }
 
@@ -609,10 +633,11 @@ function _getPosAndScale() {
         font-size: 32px
         color: $color-text
       .icon-mini
-        font-size: 32px
         position: absolute
         left: 0
         top: 0
+        z-index -1
+        font-size: 32px
 
 @keyframes rotate
   0%
