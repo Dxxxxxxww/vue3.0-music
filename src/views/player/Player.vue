@@ -93,6 +93,7 @@ import { ref, computed, watch } from 'vue'
 import { useStore } from 'vuex'
 import animations from 'create-keyframe-animation'
 import { prefixStyle } from '@/utils/dom'
+import { shuffle } from '@/utils/utils'
 import { format } from '@/utils/format'
 import { playMode } from '@/config/config'
 import ProgressBar from '@components/progress-bar'
@@ -257,7 +258,10 @@ function usePlayMusic(store) {
 
   const cdCls = computed(() => (playing.value ? 'play' : 'play pause'))
 
-  watch(currentSong, () => {
+  watch(currentSong, (newSong, oldSong) => {
+    if (newSong.id === oldSong.id) {
+      return
+    }
     setTimeout(() => {
       audioRef.value.play()
     }, 0)
@@ -278,8 +282,14 @@ function usePlayMusic(store) {
     store.commit('singerModule/setPlaying', !playing.value)
   }
 
-  const currentIndex = computed(() => store.state.singerModule.currentIndex)
-  const playList = computed(() => store.state.singerModule.playList)
+  const currentIndex = computed(
+    () => store.getters['singerModule/currentIndex']
+  )
+  const playList = computed(() => store.getters['singerModule/playList'])
+  const sequenceList = computed(
+    () => store.getters['singerModule/sequenceList']
+  )
+
   function nextSong() {
     if (!songReady.value) {
       return
@@ -326,6 +336,20 @@ function usePlayMusic(store) {
   function changePlayMode() {
     const mode = (playMode.value + 1) % 3
     store.commit('singerModule/setPlayMode', mode)
+    let list = []
+    if (playMode.value === random) {
+      list = shuffle(playList.value)
+    } else {
+      list = sequenceList.value
+    }
+    const index = resetCurrentIndex(list)
+    // 切换歌曲播放模式后，播放列表就变了，但是由于 index 是老的 index，
+    // 就会导致 歌曲变了，所以需要通过歌曲 id 来找到播放列表变化后的对应 index
+    store.commit('singerModule/setCurrentIndex', index)
+    store.commit('singerModule/setPlayList', list)
+  }
+  function resetCurrentIndex(list) {
+    return list.findIndex(item => item.id === currentSong.value.id)
   }
 
   function percentChange(percent) {

@@ -48,11 +48,20 @@ export default {
     currentSong(state) {
       return state.playList[state.currentIndex] || {}
     },
+    currentIndex(state) {
+      return state.currentIndex
+    },
     playing(state) {
       return state.playing
     },
     playMode(state) {
       return state.playMode
+    },
+    playList(state) {
+      return state.playList
+    },
+    sequenceList(state) {
+      return state.sequenceList
     }
   }
 }
