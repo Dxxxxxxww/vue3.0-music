@@ -1,4 +1,5 @@
-import { getSongsUrl } from '@/api/song'
+import { getSongsUrl, getLyric } from '@/api/song'
+import { HttpCode } from '@/lib/enum'
 
 export default class Song {
   constructor({ id, mid, singer, name, album, duration, image, url }) {
@@ -11,10 +12,19 @@ export default class Song {
     this.image = image
     this.url = url
   }
+
+  getLyric() {
+    getLyric(this.mid).then(res => {
+      console.log(res)
+      if (res.retcode === HttpCode.ERR_OK) {
+        this.lyric = res.lyric
+      }
+    })
+  }
 }
 
-export const createSong = musicData =>
-  new Song({
+export const createSong = musicData => {
+  const song = new Song({
     id: musicData.songid,
     mid: musicData.songmid,
     singer: filterSinger(musicData.singer),
@@ -24,6 +34,9 @@ export const createSong = musicData =>
     image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
     url: `http://ws.stream.qqmusic.qq.com/${musicData.songid}.m4a?fromag=46` // musicData.url
   })
+  song.getLyric(musicData.songmid)
+  return song
+}
 
 const filterSinger = singer => {
   if (!singer) {
