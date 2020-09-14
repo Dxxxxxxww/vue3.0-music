@@ -136,6 +136,10 @@ export default {
       store.dispatch('singerModule/selectPlay', { list: props.songs, index })
     }
 
+    function random() {
+      store.dispatch('singerModule/randomPlay', { list: props.songs })
+    }
+
     return {
       bgStyleRef,
       listRef,
@@ -146,7 +150,8 @@ export default {
       filterRef,
       handleScroll,
       back,
-      selectItem
+      selectItem,
+      random
     }
   },
   components: {

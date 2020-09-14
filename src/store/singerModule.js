@@ -1,5 +1,6 @@
 import { playMode } from '@/config/config'
 import * as types from './singerModuleType'
+import { shuffle } from '@/utils/utils'
 
 export default {
   namespaced: true,
@@ -36,10 +37,19 @@ export default {
     }
   },
   actions: {
-    selectPlay({ commit, state }, { list, index }) {
+    selectPlay({ commit }, { list, index }) {
       commit(types.SET_SEQUENCE_LIST, list)
       commit(types.SET_PLAY_LIST, list)
       commit(types.SET_CURRENT_INDEX, index)
+      commit(types.SET_FULL_SCREEN, true)
+      commit(types.SET_PLAYING, true)
+    },
+    randomPlay({ commit }, { list }) {
+      commit(types.SET_PLAY_MODE, playMode.random)
+      commit(types.SET_SEQUENCE_LIST, list)
+      const randomList = shuffle(list)
+      commit(types.SET_PLAY_LIST, randomList)
+      commit(types.SET_CURRENT_INDEX, 0)
       commit(types.SET_FULL_SCREEN, true)
       commit(types.SET_PLAYING, true)
     }

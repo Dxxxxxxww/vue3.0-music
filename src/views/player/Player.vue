@@ -83,6 +83,7 @@
       :src="currentSong.url"
       @playing="ready"
       @timeupdate="updateTime"
+      @ended="end"
       @error="error"
     ></audio>
   </div>
@@ -127,7 +128,8 @@ export default {
       disableCls,
       percentChange,
       playModeIconClass,
-      changePlayMode
+      changePlayMode,
+      end
     } = usePlayMusic(store)
 
     const { currentTime, updateTime } = useDuration()
@@ -163,7 +165,8 @@ export default {
       percent,
       percentChange,
       playModeIconClass,
-      changePlayMode
+      changePlayMode,
+      end
     }
   }
 }
@@ -367,6 +370,19 @@ function usePlayMusic(store) {
     songReady.value = true
   }
 
+  function end() {
+    if (playMode.value === loop) {
+      _loop()
+      return
+    }
+    nextSong()
+  }
+
+  function _loop() {
+    audioRef.value.currentTime = 0
+    audioRef.value.play()
+  }
+
   return {
     audioRef,
     currentSong,
@@ -381,7 +397,8 @@ function usePlayMusic(store) {
     disableCls,
     percentChange,
     playModeIconClass,
-    changePlayMode
+    changePlayMode,
+    end
   }
 }
 

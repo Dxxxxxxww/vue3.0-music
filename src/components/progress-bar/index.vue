@@ -112,6 +112,10 @@ export default {
     }
 
     function progressClick(e) {
+      // 这里不使用 e.offsetX 是为了解决当点击到 progressBtn
+      // 时出现的偏移量计算不正确的问题
+      // 所以使用 e.pageX 再通过 getBoundingClientRect 获取 progressBar
+      // 到页面的距离，相减就行了。
       const rect = progressBar.value.getBoundingClientRect()
       _offset(e.pageX - rect.left)
       _triggerPercent()
