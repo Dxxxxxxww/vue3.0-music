@@ -19,7 +19,9 @@
     "vue-lazyload": "^1.3.3",
     "vue-router": "^4.0.0-alpha.6",
     "vue3-lazy": "^1.0.0-alpha.1",
-    "vuex": "^4.0.0-alpha.1"
+    "vuex": "^4.0.0-alpha.1",
+    "js-base64": "^2.1.9",
+    "lyric-parser": "1.0.1"
   },
   "devDependencies": {
     "@babel/polyfill": "^7.8.7",

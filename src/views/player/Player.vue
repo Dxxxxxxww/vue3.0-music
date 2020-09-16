@@ -92,6 +92,7 @@
 <script>
 import { ref, computed, watch } from 'vue'
 import { useStore } from 'vuex'
+import Lyric from 'lyric-parser'
 import animations from 'create-keyframe-animation'
 import { prefixStyle } from '@/utils/dom'
 import { shuffle } from '@/utils/utils'
@@ -267,6 +268,7 @@ function usePlayMusic(store) {
     }
     setTimeout(() => {
       audioRef.value.play()
+      getLyric()
     }, 0)
   })
 
@@ -376,6 +378,14 @@ function usePlayMusic(store) {
       return
     }
     nextSong()
+  }
+
+  const currentLyric = ref('')
+  function getLyric() {
+    currentSong.value.getLyric().then(lyric => {
+      currentLyric.value = new Lyric(lyric)
+      console.log(currentLyric.value)
+    })
   }
 
   function _loop() {
