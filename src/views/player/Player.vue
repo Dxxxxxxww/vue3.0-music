@@ -26,6 +26,22 @@
               </div>
             </div>
           </div>
+          <m-scroll class="middle-r" style="display: inline-block;vertical-align: top;width: 100%;height: 100%;overflow: hidden;" ref="lyricList"
+          :data="currentLyric && currentLyric.lines" >
+            <div class="lyric-wrapper">
+              <div v-if="currentLyric">
+                <p
+                  v-for="(line, index) of currentLyric.lines"
+                  :ref="(ele) => (lyricLine[index] = ele)"
+                  :key="index"
+                  class="text"
+                  :class="{ current: currentLyricLineNum === index }"
+                >
+                  {{ line.txt }}
+                </p>
+              </div>
+            </div>
+          </m-scroll>
         </div>
         <div class="bottom">
           <div class="progress-wrapper">
@@ -100,13 +116,14 @@ import { format } from '@/utils/format'
 import { playMode } from '@/config/config'
 import ProgressBar from '@components/progress-bar'
 import ProgressCircle from '@components/progress-circle/ProgressCircle'
+import MScroll from '@components/m-scroll'
 
 const transform = prefixStyle('transform')
 const { sequence, loop, random } = playMode
 
 export default {
   name: 'Player',
-  components: { ProgressBar, ProgressCircle },
+  components: { ProgressBar, ProgressCircle, MScroll },
   setup(props, context) {
     const store = useStore()
     const playList = computed(() => store.state.singerModule.playList)
@@ -130,7 +147,11 @@ export default {
       percentChange,
       playModeIconClass,
       changePlayMode,
-      end
+      end,
+      currentLyric,
+      currentLyricLineNum,
+      lyricList,
+      lyricLine
     } = usePlayMusic(store)
 
     const { currentTime, updateTime } = useDuration()
@@ -167,7 +188,11 @@ export default {
       percentChange,
       playModeIconClass,
       changePlayMode,
-      end
+      end,
+      currentLyric,
+      currentLyricLineNum,
+      lyricList,
+      lyricLine
     }
   }
 }
@@ -381,11 +406,28 @@ function usePlayMusic(store) {
   }
 
   const currentLyric = ref('')
+  const currentLyricLineNum = ref(0)
   function getLyric() {
     currentSong.value.getLyric().then(lyric => {
-      currentLyric.value = new Lyric(lyric)
+      currentLyric.value = new Lyric(lyric, handleCurrentLyric)
+      if (playing.value) {
+        currentLyric.value.play()
+      }
       console.log(currentLyric.value)
     })
+  }
+
+  const lyricList = ref(null)
+  const lyricLine = ref([])
+  function handleCurrentLyric({ lineNum, txt }) {
+    currentLyricLineNum.value = lineNum
+    if (lineNum > 5) {
+      const el = lyricLine.value[lineNum - 5]
+      console.log(el, lyricLine.value)
+      lyricList.value.scrollToElem(el, 1000)
+    } else {
+      lyricList.value.scrollTo(0, 0, 1000)
+    }
   }
 
   function _loop() {
@@ -408,7 +450,11 @@ function usePlayMusic(store) {
     percentChange,
     playModeIconClass,
     changePlayMode,
-    end
+    end,
+    currentLyric,
+    currentLyricLineNum,
+    lyricList,
+    lyricLine
   }
 }
 

@@ -11,7 +11,7 @@ const DIRECTION_H = 'horizontal'
 const DIRECTION_V = 'vertical'
 
 export default {
-  name: '',
+  name: 'MScroll',
   props: {
     probeType: {
       type: Number,
@@ -89,3 +89,5 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="stylus"></style>
