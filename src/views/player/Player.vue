@@ -18,7 +18,12 @@
           <h1 class="title" v-html="currentSong.name"></h1>
           <h2 class="subtitle" v-html="currentSong.singer"></h2>
         </div>
-        <div class="middle">
+        <div
+          class="middle"
+          @touchstart.prevent="touchStart"
+          @touchmove.prevent="touchMove"
+          @touchend.prevent="touchEnd"
+        >
           <div class="middle-l">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd" :class="cdCls">
@@ -26,13 +31,17 @@
               </div>
             </div>
           </div>
-          <m-scroll class="middle-r" style="display: inline-block;vertical-align: top;width: 100%;height: 100%;overflow: hidden;" ref="lyricList"
-          :data="currentLyric && currentLyric.lines" >
+          <m-scroll
+            class="middle-r"
+            style="display: inline-block;vertical-align: top;width: 100%;height: 100%;overflow: hidden;"
+            ref="lyricList"
+            :data="currentLyric && currentLyric.lines"
+          >
             <div class="lyric-wrapper">
               <div v-if="currentLyric">
                 <p
                   v-for="(line, index) of currentLyric.lines"
-                  :ref="(ele) => (lyricLine[index] = ele)"
+                  :ref="ele => (lyricLine[index] = ele)"
                   :key="index"
                   class="text"
                   :class="{ current: currentLyricLineNum === index }"
@@ -44,6 +53,13 @@
           </m-scroll>
         </div>
         <div class="bottom">
+          <div class="dot-wrapper">
+            <span class="dot" :class="{ active: currentShow === 'cd' }"></span>
+            <span
+              class="dot"
+              :class="{ active: currentShow === 'lyric' }"
+            ></span>
+          </div>
           <div class="progress-wrapper">
             <span class="time time-l">{{ format(currentTime) }}</span>
             <div class="progress-bar-wrapper">
@@ -151,7 +167,11 @@ export default {
       currentLyric,
       currentLyricLineNum,
       lyricList,
-      lyricLine
+      lyricLine,
+      currentShow,
+      touchStart,
+      touchMove,
+      touchEnd
     } = usePlayMusic(store)
 
     const { currentTime, updateTime } = useDuration()
@@ -192,7 +212,11 @@ export default {
       currentLyric,
       currentLyricLineNum,
       lyricList,
-      lyricLine
+      lyricLine,
+      currentShow,
+      touchStart,
+      touchMove,
+      touchEnd
     }
   }
 }
@@ -430,6 +454,42 @@ function usePlayMusic(store) {
     }
   }
 
+  // cd 和 歌词 滑动实现
+  const currentShow = ref('cd')
+  /* eslint-disable */
+  const touchObj = {}
+
+  function touchStart(e) {
+    touchObj.initiated = true
+    const touch = e.touches[0]
+    touchObj.startX = touch.pageX
+    touchObj.startY = touch.pageY
+  }
+
+  function touchMove(e) {
+    if (!touchObj.initiated) {
+      return
+    }
+
+    const touch = e.touches[0]
+    const deltaX = touch.pageX - touchObj.startX
+    const deltaY = touch.pageY - touchObj.startY
+    // 因为歌词是纵向滚动，所以这里如果纵向差大于横向差，就不做歌词和 cd 的切换
+    const absX = Math.abs(deltaX)
+    const absY = Math.abs(deltaY)
+
+    if (absY > absX) {
+      return
+    }
+    // 因为默认是歌词在右，cd 在左，所以从左往右划最小值是 负的屏幕宽度，最大值是0 操作歌词的滑动
+    const left = currentShow.value === 'cd' ? 0 : -window.innerWidth
+    // max 判断从右往左划的情况， min 判断从左往右划的情况   ps：x轴往右增大，y轴往下增大，左上角为坐标原点
+    const width = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
+    lyricList.value.$el.style[transform] = `translate3d(${width}px, 0, 0)`
+  }
+
+  function touchEnd(e) {}
+
   function _loop() {
     audioRef.value.currentTime = 0
     audioRef.value.play()
@@ -454,7 +514,11 @@ function usePlayMusic(store) {
     currentLyric,
     currentLyricLineNum,
     lyricList,
-    lyricLine
+    lyricLine,
+    currentShow,
+    touchStart,
+    touchMove,
+    touchEnd
   }
 }
 
