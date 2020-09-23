@@ -24,7 +24,7 @@
           @touchmove.prevent="touchMove"
           @touchend.prevent="touchEnd"
         >
-          <div class="middle-l">
+          <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd" :class="cdCls">
                 <img :src="currentSong.image" alt="" class="image" />
@@ -135,6 +135,7 @@ import ProgressCircle from '@components/progress-circle/ProgressCircle'
 import MScroll from '@components/m-scroll'
 
 const transform = prefixStyle('transform')
+const transitionDuration = prefixStyle('transitionDuration')
 const { sequence, loop, random } = playMode
 
 export default {
@@ -171,7 +172,8 @@ export default {
       currentShow,
       touchStart,
       touchMove,
-      touchEnd
+      touchEnd,
+      middleL
     } = usePlayMusic(store)
 
     const { currentTime, updateTime } = useDuration()
@@ -216,7 +218,8 @@ export default {
       currentShow,
       touchStart,
       touchMove,
-      touchEnd
+      touchEnd,
+      middleL
     }
   }
 }
@@ -442,12 +445,13 @@ function usePlayMusic(store) {
   }
 
   const lyricList = ref(null)
+  const middleL = ref(null)
   const lyricLine = ref([])
   function handleCurrentLyric({ lineNum, txt }) {
     currentLyricLineNum.value = lineNum
     if (lineNum > 5) {
       const el = lyricLine.value[lineNum - 5]
-      console.log(el, lyricLine.value)
+      // console.log(el, lyricLine.value)
       lyricList.value.scrollToElem(el, 1000)
     } else {
       lyricList.value.scrollTo(0, 0, 1000)
@@ -484,11 +488,44 @@ function usePlayMusic(store) {
     // 因为默认是歌词在右，cd 在左，所以从左往右划最小值是 负的屏幕宽度，最大值是0 操作歌词的滑动
     const left = currentShow.value === 'cd' ? 0 : -window.innerWidth
     // max 判断从右往左划的情况， min 判断从左往右划的情况   ps：x轴往右增大，y轴往下增大，左上角为坐标原点
-    const width = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
-    lyricList.value.$el.style[transform] = `translate3d(${width}px, 0, 0)`
+    const offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
+    touchObj.percent = Math.abs(offsetWidth / window.innerWidth)
+    // 这里需要把时间取消是因为 move 的时候是不断变化的，不需要 transition
+    const time = 0
+    lyricList.value.$el.style[transform] = `translate3d(${offsetWidth}px, 0, 0)`
+    lyricList.value.$el.style[transitionDuration] = `${time}ms`
+    const opacity = 1 - touchObj.percent
+    middleL.value.style.opacity = opacity
+    middleL.value.style[transitionDuration] = `${time}ms`
   }
 
-  function touchEnd(e) {}
+  function touchEnd(e) {
+    let offsetWidth, opacity
+    if (currentShow.value === 'cd') {
+      if (touchObj.percent > 0.1) {
+        offsetWidth = -window.innerWidth
+        opacity = 0
+        currentShow.value = 'lyric'
+      } else {
+        offsetWidth = 0
+        opacity = 1
+      }
+    } else {
+      if (touchObj.percent < 0.9) {
+        offsetWidth = 0
+        opacity = 1
+        currentShow.value = 'cd'
+      } else {
+        offsetWidth = -window.innerWidth
+        opacity = 0
+      }
+    }
+    const time = 300
+    lyricList.value.$el.style[transform] = `translate3d(${offsetWidth}px, 0, 0)`
+    lyricList.value.$el.style[transitionDuration] = `${time}ms`
+    middleL.value.style.opacity = opacity
+    middleL.value.style[transitionDuration] = `${time}ms`
+  }
 
   function _loop() {
     audioRef.value.currentTime = 0
@@ -518,7 +555,8 @@ function usePlayMusic(store) {
     currentShow,
     touchStart,
     touchMove,
-    touchEnd
+    touchEnd,
+    middleL
   }
 }
 
