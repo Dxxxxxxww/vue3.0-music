@@ -4,15 +4,20 @@
     <div @click="copyText">copy</div>
     <div @click="copyText">copy2</div>
     <div class="border-right"></div>
+    <test fixed></test>
   </div>
 </template>
 
 <script>
 import { ref, onMounted } from 'vue'
 // import axios from 'axios'
+import Test from './Test'
 
 export default {
   name: 'Mine',
+  components: {
+    Test
+  },
   data() {
     return {}
   },

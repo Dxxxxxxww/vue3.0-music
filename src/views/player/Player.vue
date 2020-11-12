@@ -30,6 +30,9 @@
                 <img :src="currentSong.image" alt="" class="image" />
               </div>
             </div>
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric">{{playingLyric}}</div>
+            </div>
           </div>
           <m-scroll
             class="middle-r"
@@ -173,7 +176,8 @@ export default {
       touchStart,
       touchMove,
       touchEnd,
-      middleL
+      middleL,
+      playingLyric
     } = usePlayMusic(store)
 
     const { currentTime, updateTime } = useDuration()
@@ -219,7 +223,8 @@ export default {
       touchStart,
       touchMove,
       touchEnd,
-      middleL
+      middleL,
+      playingLyric
     }
   }
 }
@@ -318,6 +323,14 @@ function usePlayMusic(store) {
     if (newSong.id === oldSong.id) {
       return
     }
+    // fix: 歌词已经在滚动时，切歌导致当前歌词跳动
+    if (currentLyric.value) {
+      currentLyric.value.stop()
+    }
+    // fix: 解决切换到后台后，js 不执行，但是 audio 仍然会播放歌曲，当播放完时触发的回调不执行，
+    // 导致再切回来后 songReady 永远不会置为 true，就不能切换歌曲播放状态了
+    // 所以将延时改长，保证后台切回前台后的正常代码执行。why？
+    // 经测试，华为自带浏览器，safari 不会暂停 js 执行。 edge 会暂停所有活动（歌曲也不播放了）
     setTimeout(() => {
       audioRef.value.play()
       getLyric()
@@ -337,6 +350,10 @@ function usePlayMusic(store) {
       return
     }
     store.commit('singerModule/setPlaying', !playing.value)
+    // fix: 歌曲暂停时歌词仍在播放的问题
+    if (currentLyric.value) {
+      currentLyric.value.togglePlay()
+    }
   }
 
   const currentIndex = computed(
@@ -351,14 +368,19 @@ function usePlayMusic(store) {
     if (!songReady.value) {
       return
     }
-    let index = currentIndex.value + 1
-    if (index === playList.value.length) {
-      index = 0
-    }
-    store.commit('singerModule/setCurrentIndex', index)
-    // 暂停情况下切歌，改成播放状态
-    if (!playing.value) {
-      togglePlaying()
+    // fix: 当只有一首歌曲时， 点击下一首，setCurrentIndex 不发生变化导致所有逻辑都不执行的问题
+    if (playList.value.length === 1) {
+      loopMode()
+    } else {
+      let index = currentIndex.value + 1
+      if (index === playList.value.length) {
+        index = 0
+      }
+      store.commit('singerModule/setCurrentIndex', index)
+      // 暂停情况下切歌，改成播放状态
+      if (!playing.value) {
+        togglePlaying()
+      }
     }
     songReady.value = false
   }
@@ -367,14 +389,19 @@ function usePlayMusic(store) {
     if (!songReady.value) {
       return
     }
-    let index = currentIndex.value - 1
-    if (index === -1) {
-      index = playList.value.length - 1
-    }
-    store.commit('singerModule/setCurrentIndex', index)
-    // 暂停情况下切歌，改成播放状态
-    if (!playing.value) {
-      togglePlaying()
+    // fix: 当只有一首歌曲时， 点击上一首， setCurrentIndex 不发生变化导致所有逻辑都不执行的问题
+    if (playList.value.length === 1) {
+      loopMode()
+    } else {
+      let index = currentIndex.value - 1
+      if (index === -1) {
+        index = playList.value.length - 1
+      }
+      store.commit('singerModule/setCurrentIndex', index)
+      // 暂停情况下切歌，改成播放状态
+      if (!playing.value) {
+        togglePlaying()
+      }
     }
     songReady.value = false
   }
@@ -410,9 +437,14 @@ function usePlayMusic(store) {
   }
 
   function percentChange(percent) {
-    audioRef.value.currentTime = currentSong.value.duration * percent
+    const currentTime = currentSong.value.duration * percent
+    audioRef.value.currentTime = currentTime
     if (!playing.value) {
       togglePlaying()
+    }
+    // fix: 拖动进度条时歌词不跟随进度问题
+    if (currentLyric.value) {
+      currentLyric.value.seek(currentTime * 1000)
     }
   }
 
@@ -426,27 +458,44 @@ function usePlayMusic(store) {
 
   function end() {
     if (playMode.value === loop) {
-      _loop()
+      loopMode()
       return
     }
     nextSong()
   }
 
+  function loopMode() {
+    audioRef.value.currentTime = 0
+    audioRef.value.play()
+    // fix: 单曲循环时歌词不从头开始滚动问题
+    if (currentLyric.value) {
+      currentLyric.value.seek(0)
+    }
+  }
+
   const currentLyric = ref('')
   const currentLyricLineNum = ref(0)
   function getLyric() {
-    currentSong.value.getLyric().then(lyric => {
-      currentLyric.value = new Lyric(lyric, handleCurrentLyric)
-      if (playing.value) {
-        currentLyric.value.play()
-      }
-      console.log(currentLyric.value)
-    })
+    currentSong.value
+      .getLyric()
+      .then(lyric => {
+        currentLyric.value = new Lyric(lyric, handleCurrentLyric)
+        if (playing.value) {
+          currentLyric.value.play()
+        }
+        console.log(currentLyric.value)
+      })
+      .catch(() => {
+        currentLyric.value = null
+        playingLyric.value = ''
+        currentLyricLineNum.value = 0
+      })
   }
 
   const lyricList = ref(null)
   const middleL = ref(null)
   const lyricLine = ref([])
+  const playingLyric = ref('')
   function handleCurrentLyric({ lineNum, txt }) {
     currentLyricLineNum.value = lineNum
     if (lineNum > 5) {
@@ -456,6 +505,7 @@ function usePlayMusic(store) {
     } else {
       lyricList.value.scrollTo(0, 0, 1000)
     }
+    playingLyric.value = txt
   }
 
   // cd 和 歌词 滑动实现
@@ -468,6 +518,7 @@ function usePlayMusic(store) {
     const touch = e.touches[0]
     touchObj.startX = touch.pageX
     touchObj.startY = touch.pageY
+    touchObj.switch = true
   }
 
   function touchMove(e) {
@@ -481,8 +532,8 @@ function usePlayMusic(store) {
     // 因为歌词是纵向滚动，所以这里如果纵向差大于横向差，就不做歌词和 cd 的切换
     const absX = Math.abs(deltaX)
     const absY = Math.abs(deltaY)
-
     if (absY > absX) {
+      touchObj.switch = false
       return
     }
     // 因为默认是歌词在右，cd 在左，所以从左往右划最小值是 负的屏幕宽度，最大值是0 操作歌词的滑动
@@ -501,6 +552,10 @@ function usePlayMusic(store) {
 
   function touchEnd(e) {
     let offsetWidth, opacity
+    // fix: 纵向滚动大于横向滚动时也切换页面的问题
+    if (!touchObj.switch) {
+      return
+    }
     if (currentShow.value === 'cd') {
       if (touchObj.percent > 0.1) {
         offsetWidth = -window.innerWidth
@@ -527,11 +582,6 @@ function usePlayMusic(store) {
     middleL.value.style[transitionDuration] = `${time}ms`
   }
 
-  function _loop() {
-    audioRef.value.currentTime = 0
-    audioRef.value.play()
-  }
-
   return {
     audioRef,
     currentSong,
@@ -556,7 +606,8 @@ function usePlayMusic(store) {
     touchStart,
     touchMove,
     touchEnd,
-    middleL
+    middleL,
+    playingLyric
   }
 }
 
