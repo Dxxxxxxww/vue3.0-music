@@ -329,7 +329,8 @@ function usePlayMusic(store) {
     }
     // fix: 解决切换到后台后，js 不执行，但是 audio 仍然会播放歌曲，当播放完时触发的回调不执行，
     // 导致再切回来后 songReady 永远不会置为 true，就不能切换歌曲播放状态了
-    // 所以将延时改长，保证后台切回前台后的正常代码执行。why？
+    // 所以将延时改长，保证后台切回前台后的正常代码执行。why？ 这个是因为之前使用的是 nextTick 而不是 setTimeout 。
+    // 而旧版本的 nextTick 里的 messageChannel 的优先级比较高，而切到后台后 messageChannel 会不触发回调，所以出现问题。 这部分解答可以看源码课 4-8 nextTick
     // 经测试，华为自带浏览器，safari 不会暂停 js 执行。 edge 会暂停所有活动（歌曲也不播放了）
     setTimeout(() => {
       audioRef.value.play()

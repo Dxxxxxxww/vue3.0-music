@@ -1,20 +1,25 @@
 <template>
   <transition appear name="slide">
-    <music-list
-      :songs="songsRef"
-      :title="singer.name"
-      :bg-image="singer.avatar"
-    ></music-list>
+    <div>
+      <!-- 踩坑：当不给组件包裹 div 的时候，ref 始终无法绑定到组件上，当我偶然间将 div 包裹上去，发现可以绑定了-->
+      <music-list
+        ref="musicRef"
+        :songs="songs"
+        :title="singer.name"
+        :bg-image="singer.avatar"
+      ></music-list>
+    </div>
   </transition>
 </template>
 
 <script>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { getSingerDetail } from '@/api/singer'
 import { HttpCode } from '@/lib/enum'
 import { createSong, isValidMusic, processSongsUrl } from '@/lib/Song.js'
+import playListHook from '@/hooks/playListHook'
 import MusicList from '@/components/music-list/index.vue'
 
 const { ERR_OK } = HttpCode
@@ -29,7 +34,8 @@ export default {
     const router = useRouter()
     const singer = store.state.singerModule.singer
 
-    const songsRef = ref([])
+    const songs = ref([])
+    const musicRef = ref(null)
     watch(
       () => singer,
       currentVal => {
@@ -46,8 +52,8 @@ export default {
       try {
         const result = await getSingerDetail(id)
         if (result.code === ERR_OK) {
-          processSongsUrl(_normalizeSongs(result.data.list)).then(songs => {
-            songsRef.value = songs
+          processSongsUrl(_normalizeSongs(result.data.list)).then(songList => {
+            songs.value = songList
           })
         }
       } catch (error) {
@@ -64,8 +70,27 @@ export default {
       }, [])
 
     _getDetail(singer)
+    console.log(musicRef.value)
+    onMounted(() => {
+      console.log('==', musicRef.value)
+      playListHook(musicRef.value.$el)
+    })
+    // const store = useStore()
+    // const playList = computed(() => store.state.singerModule.playList)
 
-    return { singer, songsRef }
+    // onMounted(() => {
+    //   handlePlayList(playList.value)
+    // })
+
+    // watch(playList, newVal => {
+    //   handlePlayList(newVal)
+    // })
+
+    // function handlePlayList(playList) {
+    //   const bottom = playList.length > 0 ? '60px' : ''
+    //   musicRef.value.$el.style.bottom = bottom
+    // }
+    return { singer, songs, musicRef }
   }
 }
 </script>
