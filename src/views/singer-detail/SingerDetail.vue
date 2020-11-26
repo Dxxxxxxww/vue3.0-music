@@ -72,9 +72,10 @@ export default {
     _getDetail(singer)
     console.log(musicRef.value)
     onMounted(() => {
-      console.log('==', musicRef.value)
+      // 放在 onMounted 确保 musicRef 已被绑定
       playListHook(musicRef.value.$el)
     })
+
     // const store = useStore()
     // const playList = computed(() => store.state.singerModule.playList)
 

@@ -1,6 +1,10 @@
 <template>
-  <div class="singer">
-    <m-listview :data="singersRef" @select="handleSelect"></m-listview>
+  <div class="singer" ref="singerRef">
+    <m-listview
+      :data="singersRef"
+      @select="handleSelect"
+      ref="listRef"
+    ></m-listview>
     <router-view></router-view>
   </div>
 </template>
@@ -12,6 +16,7 @@ import { useStore } from 'vuex'
 import { getSingerList } from '@/api/singer'
 import { HttpCode } from '@/lib/enum'
 import Singer from '@/lib/Singer'
+import playListHook from '@/hooks/playListHook'
 import MListview from './singer-compontets/m-listview'
 
 // const { log } = console
@@ -27,7 +32,14 @@ export default {
     const singersRef = ref([])
     const router = useRouter()
     const store = useStore()
-    onMounted(_getSingerList)
+    const singerRef = ref(null)
+    const listRef = ref(null)
+
+    onMounted(() => {
+      _getSingerList()
+      console.log('==', singerRef.value)
+      playListHook(singerRef.value.$el)
+    })
     // 可以直接在 setup 里调用
     // _getSingerList()
 
@@ -92,7 +104,7 @@ export default {
       router.push({ path: `/singer/${singer.id}` })
     }
 
-    return { singersRef, handleSelect }
+    return { singersRef, handleSelect, singerRef, listRef }
   }
 }
 </script>
