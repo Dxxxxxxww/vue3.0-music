@@ -114,6 +114,10 @@ export default {
       context.emit('select', item)
     }
 
+    function refresh() {
+      scrollRef.value.refresh()
+    }
+
     return {
       currentIndexRef,
       lettersRef,
@@ -125,7 +129,8 @@ export default {
       handleScroll,
       handleLetterTouchStart,
       handleLetterTouchMove,
-      handleClickItem
+      handleClickItem,
+      refresh
     }
   }
 }

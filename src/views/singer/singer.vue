@@ -1,5 +1,5 @@
 <template>
-  <div class="singer" ref="singerRef">
+  <div class="singer">
     <m-listview
       :data="singersRef"
       @select="handleSelect"
@@ -32,13 +32,12 @@ export default {
     const singersRef = ref([])
     const router = useRouter()
     const store = useStore()
-    const singerRef = ref(null)
     const listRef = ref(null)
 
     onMounted(() => {
       _getSingerList()
-      console.log('==', singerRef.value)
-      playListHook(singerRef.value.$el)
+      playListHook(listRef.value.$el)
+      listRef.value.refresh()
     })
     // 可以直接在 setup 里调用
     // _getSingerList()
@@ -104,7 +103,7 @@ export default {
       router.push({ path: `/singer/${singer.id}` })
     }
 
-    return { singersRef, handleSelect, singerRef, listRef }
+    return { singersRef, handleSelect, listRef }
   }
 }
 </script>
