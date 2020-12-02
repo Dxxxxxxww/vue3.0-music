@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend">
+  <div class="recommend" ref="scrollWrapperRef">
     <m-scroll ref="scroll" :data="discList" class="recommend-content">
       <div>
         <div class="slider-wrapper">
@@ -37,11 +37,13 @@
 </template>
 
 <script>
+import { ref, onMounted } from 'vue'
 import { getRecommend, getDiscList } from '@/api/recommend'
 import MSlider from '@components/m-slider/index'
 import MScroll from '@components/m-scroll/index'
 import Loading from '@components/loading/loading'
 import { HttpCode } from '@/lib/enum'
+import playListHook from '@/hooks/playListHook'
 
 const { ERR_OK } = HttpCode
 const { log } = console
@@ -53,49 +55,101 @@ export default {
     MScroll,
     Loading
   },
-  data() {
-    return {
-      recommends: [],
-      discList: []
+  setup() {
+    const recommends = ref([])
+    const discList = ref([])
+    const scrollWrapperRef = ref(null)
+
+    onMounted(() => {
+      playListHook(scrollWrapperRef.value)
+    })
+
+    _getRecommend()
+    _getDiscList()
+
+    function loadImage() {
+      // 为了保证轮播图的加载后高度才是正常的，在这里刷新一下 BScroll
+      // 防止 BScroll 滚动出现问题。但是并不需要这样做，因为轮播图高度
+      // 已经通过 padding-bottom 撑开了，m-scroll 的滚动高度已经是正常的了
+      if (!this.checkLoaded) {
+        this.$refs.scroll.refresh()
+        this.checkLoaded = true
+      }
     }
-  },
-  created() {
-    this._getRecommend()
-    this._getDiscList()
-  },
-  methods: {
+
     // 在入口文件加上 keep-alive 避免每次切换路由都要重新渲染dom而重新请求
-    _getRecommend() {
+    function _getRecommend() {
       getRecommend().then(res => {
         if (res.code === ERR_OK) {
-          this.recommends = res.data.slider
+          recommends.value = res.data.slider
         }
       })
       // .catch(rej => {
       // api 返回的 reject 可以在这里 catch 住
       // console.log('reject', rej)
       // })
-    },
-    _getDiscList() {
+    }
+    function _getDiscList() {
       getDiscList()
         .then(res => {
           log('resres', res.data)
-          this.discList = res.data.list
+          discList.value = res.data.list
         })
         .catch(rej => {
           log(rej)
         })
-    },
-    loadImage() {
-      // 为了保证轮播图的加载后高度才是正常的，在这里刷新一下 BScroll
-      // 防止 BScroll 滚动出现问题。但是并不需要这样做，因为轮播图高度
-      // 已经通过 padding-bottom 撑开了，m-scroll 的滚动高度已经是正常的了
-      // if (!this.checkLoaded) {
-      //   this.$refs.scroll.refresh()
-      //   this.checkLoaded = true
-      // }
+    }
+
+    return {
+      recommends,
+      discList,
+      scrollWrapperRef,
+      loadImage
     }
   }
+  // data() {
+  //   return {
+  //     recommends: [],
+  //     discList: []
+  //   }
+  // },
+  // created() {
+  //   this._getRecommend()
+  //   this._getDiscList()
+  // },
+  // methods: {
+  //   // 在入口文件加上 keep-alive 避免每次切换路由都要重新渲染dom而重新请求
+  //   _getRecommend() {
+  //     getRecommend().then(res => {
+  //       if (res.code === ERR_OK) {
+  //         this.recommends = res.data.slider
+  //       }
+  //     })
+  //     // .catch(rej => {
+  //     // api 返回的 reject 可以在这里 catch 住
+  //     // console.log('reject', rej)
+  //     // })
+  //   },
+  //   _getDiscList() {
+  //     getDiscList()
+  //       .then(res => {
+  //         log('resres', res.data)
+  //         this.discList = res.data.list
+  //       })
+  //       .catch(rej => {
+  //         log(rej)
+  //       })
+  //   },
+  //   loadImage() {
+  //     // 为了保证轮播图的加载后高度才是正常的，在这里刷新一下 BScroll
+  //     // 防止 BScroll 滚动出现问题。但是并不需要这样做，因为轮播图高度
+  //     // 已经通过 padding-bottom 撑开了，m-scroll 的滚动高度已经是正常的了
+  //     // if (!this.checkLoaded) {
+  //     //   this.$refs.scroll.refresh()
+  //     //   this.checkLoaded = true
+  //     // }
+  //   }
+  // }
 }
 </script>
 
