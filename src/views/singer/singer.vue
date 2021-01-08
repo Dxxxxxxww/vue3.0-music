@@ -99,7 +99,7 @@ export default {
     }
 
     const handleSelect = singer => {
-      store.commit('singerModule/setSinger', singer)
+      store.commit('musicModule/setSinger', singer)
       router.push({ path: `/singer/${singer.id}` })
     }
 

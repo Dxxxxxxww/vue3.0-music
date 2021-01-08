@@ -132,12 +132,12 @@ export default {
 
     const store = useStore()
     function selectItem({ item, index }) {
-      // store.commit('singerModule/setPlayList', props.songs)
-      store.dispatch('singerModule/selectPlay', { list: props.songs, index })
+      // store.commit('musicModule/setPlayList', props.songs)
+      store.dispatch('musicModule/selectPlay', { list: props.songs, index })
     }
 
     function random() {
-      store.dispatch('singerModule/randomPlay', { list: props.songs })
+      store.dispatch('musicModule/randomPlay', { list: props.songs })
     }
 
     return {

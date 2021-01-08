@@ -146,7 +146,7 @@ export default {
   components: { ProgressBar, ProgressCircle, MScroll },
   setup(props, context) {
     const store = useStore()
-    const playList = computed(() => store.state.singerModule.playList)
+    const playList = computed(() => store.state.musicModule.playList)
 
     const { back, open, fullScreen } = useTogglePlayerFullScreen(store)
 
@@ -291,14 +291,14 @@ function useAnimation() {
  * @description 切换播放器全屏/缩小状态
  */
 function useTogglePlayerFullScreen(store) {
-  const fullScreen = computed(() => store.state.singerModule.fullScreen)
+  const fullScreen = computed(() => store.state.musicModule.fullScreen)
 
   function back() {
-    store.commit('singerModule/setFullScreen', false)
+    store.commit('musicModule/setFullScreen', false)
   }
 
   function open() {
-    store.commit('singerModule/setFullScreen', true)
+    store.commit('musicModule/setFullScreen', true)
   }
 
   return {
@@ -310,8 +310,8 @@ function useTogglePlayerFullScreen(store) {
 
 function usePlayMusic(store) {
   const audioRef = ref(null)
-  const currentSong = computed(() => store.getters['singerModule/currentSong'])
-  const playing = computed(() => store.getters['singerModule/playing'])
+  const currentSong = computed(() => store.getters['musicModule/currentSong'])
+  const playing = computed(() => store.getters['musicModule/playing'])
   const playIcon = computed(() => (playing.value ? 'icon-pause' : 'icon-play'))
   const miniIcon = computed(() =>
     playing.value ? 'icon-pause-mini' : 'icon-play-mini'
@@ -350,7 +350,7 @@ function usePlayMusic(store) {
     if (!songReady.value) {
       return
     }
-    store.commit('singerModule/setPlaying', !playing.value)
+    store.commit('musicModule/setPlaying', !playing.value)
     // fix: 歌曲暂停时歌词仍在播放的问题
     if (currentLyric.value) {
       currentLyric.value.togglePlay()
@@ -358,11 +358,11 @@ function usePlayMusic(store) {
   }
 
   const currentIndex = computed(
-    () => store.getters['singerModule/currentIndex']
+    () => store.getters['musicModule/currentIndex']
   )
-  const playList = computed(() => store.getters['singerModule/playList'])
+  const playList = computed(() => store.getters['musicModule/playList'])
   const sequenceList = computed(
-    () => store.getters['singerModule/sequenceList']
+    () => store.getters['musicModule/sequenceList']
   )
 
   function nextSong() {
@@ -377,7 +377,7 @@ function usePlayMusic(store) {
       if (index === playList.value.length) {
         index = 0
       }
-      store.commit('singerModule/setCurrentIndex', index)
+      store.commit('musicModule/setCurrentIndex', index)
       // 暂停情况下切歌，改成播放状态
       if (!playing.value) {
         togglePlaying()
@@ -398,7 +398,7 @@ function usePlayMusic(store) {
       if (index === -1) {
         index = playList.value.length - 1
       }
-      store.commit('singerModule/setCurrentIndex', index)
+      store.commit('musicModule/setCurrentIndex', index)
       // 暂停情况下切歌，改成播放状态
       if (!playing.value) {
         togglePlaying()
@@ -407,7 +407,7 @@ function usePlayMusic(store) {
     songReady.value = false
   }
 
-  const playMode = computed(() => store.getters['singerModule/playMode'])
+  const playMode = computed(() => store.getters['musicModule/playMode'])
   const playModeIconClass = computed(() =>
     playMode.value === sequence
       ? 'icon-sequence'
@@ -420,7 +420,7 @@ function usePlayMusic(store) {
 
   function changePlayMode() {
     const mode = (playMode.value + 1) % 3
-    store.commit('singerModule/setPlayMode', mode)
+    store.commit('musicModule/setPlayMode', mode)
     let list = []
     if (playMode.value === random) {
       list = shuffle(playList.value)
@@ -430,8 +430,8 @@ function usePlayMusic(store) {
     const index = resetCurrentIndex(list)
     // 切换歌曲播放模式后，播放列表就变了，但是由于 index 是老的 index，
     // 就会导致 歌曲变了，所以需要通过歌曲 id 来找到播放列表变化后的对应 index
-    store.commit('singerModule/setCurrentIndex', index)
-    store.commit('singerModule/setPlayList', list)
+    store.commit('musicModule/setCurrentIndex', index)
+    store.commit('musicModule/setPlayList', list)
   }
   function resetCurrentIndex(list) {
     return list.findIndex(item => item.id === currentSong.value.id)

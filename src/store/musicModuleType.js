@@ -1,4 +1,5 @@
 export const SET_SINGER = 'setSinger'
+export const SET_DISC = 'setDisc'
 export const SET_PLAYING = 'setPlaying'
 export const SET_FULL_SCREEN = 'setFullScreen'
 export const SET_PLAY_LIST = 'setPlayList'

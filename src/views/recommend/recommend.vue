@@ -17,7 +17,12 @@
         <div class="recommend-list">
           <h1 class="list-title">热门歌单推荐</h1>
           <ul>
-            <li v-for="(item, index) of discList" :key="index" class="item">
+            <li
+              v-for="(item, index) of discList"
+              :key="index"
+              class="item"
+              @click="selectDisc(item)"
+            >
               <div class="icon">
                 <img width="60" height="60" :src="item.imgurl" />
               </div>
@@ -33,6 +38,9 @@
         </div>
       </div>
     </m-scroll>
+    <transition name="slide">
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
@@ -44,6 +52,8 @@ import MScroll from '@components/m-scroll/index'
 import Loading from '@components/loading/loading'
 import { HttpCode } from '@/lib/enum'
 import playListHook from '@/hooks/playListHook'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 
 const { ERR_OK } = HttpCode
 const { log } = console
@@ -56,6 +66,8 @@ export default {
     Loading
   },
   setup() {
+    const store = useStore()
+    const router = useRouter()
     const recommends = ref([])
     const discList = ref([])
     const scrollWrapperRef = ref(null)
@@ -75,6 +87,12 @@ export default {
         this.$refs.scroll.refresh()
         this.checkLoaded = true
       }
+    }
+
+    function selectDisc(item) {
+      store.commit('musicModule/setDisc', item)
+      console.log(item)
+      router.push({ path: `/recommend/${item.dissid}` })
     }
 
     // 在入口文件加上 keep-alive 避免每次切换路由都要重新渲染dom而重新请求
@@ -104,7 +122,8 @@ export default {
       recommends,
       discList,
       scrollWrapperRef,
-      loadImage
+      loadImage,
+      selectDisc
     }
   }
   // data() {
@@ -156,6 +175,12 @@ export default {
 <style lang="stylus">
 @import '~@styles/variable'
 
+.slide-enter-active, .slide-leave-active
+  transition all 0.3s
+
+.slide-enter, .slide-leave-to
+  transform translate3d(100%, 0, 0)
+
 .recommend
   position fixed
   width 100%
@@ -172,7 +197,8 @@ export default {
       // padding-top 40% 这里如果是 top 的话会把内容(子元素)在地板，挤出了范围然后被 overflow hidden 就不可见了,就得使用 slider-content 这一层的样式让元素显示。不过这一层的元素是要的，是为了不让图片还未加载的时候元素不渲染时会抖动。
       // padding-bottom 的话内容在天花板，子元素还是可以显现的，就不需要 slider-content 这一层的样式
       overflow hidden
-      .slider-content
+
+      //.slider-content
         // position absolute
         // top 0
         // left 0

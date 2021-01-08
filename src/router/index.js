@@ -4,6 +4,7 @@ const Mine = () => import('@views/mine/Mine')
 const SocialContact = () => import('@views/social-contact/SocialContact')
 const Singer = () => import('@views/singer/Singer')
 const SingerDetail = () => import('@views/singer-detail/SingerDetail')
+const Disc = () => import('@views/disc/Disc')
 const Rank = () => import('@views/rank/Rank')
 const Test = () => import('@views/test-tab/Test')
 
@@ -20,7 +21,14 @@ const routes = [
   {
     path: '/recommend',
     name: 'Recommend',
-    component: Recommend
+    component: Recommend,
+    children: [
+      {
+        path: ':id',
+        name: 'Disc',
+        component: Disc
+      }
+    ]
   },
   {
     path: '/social-contact',

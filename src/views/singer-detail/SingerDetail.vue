@@ -32,7 +32,7 @@ export default {
   setup() {
     const store = useStore()
     const router = useRouter()
-    const singer = store.state.singerModule.singer
+    const singer = store.state.musicModule.singer
 
     const songs = ref([])
     const musicRef = ref(null)
@@ -77,7 +77,7 @@ export default {
     })
 
     // const store = useStore()
-    // const playList = computed(() => store.state.singerModule.playList)
+    // const playList = computed(() => store.state.musicModule.playList)
 
     // onMounted(() => {
     //   handlePlayList(playList.value)

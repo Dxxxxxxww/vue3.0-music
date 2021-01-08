@@ -1,8 +1,8 @@
 import Vuex from 'vuex'
-import singerModule from './singerModule'
+import musicModule from './musicModule'
 
 export default Vuex.createStore({
   modules: {
-    singerModule
+    musicModule
   }
 })

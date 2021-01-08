@@ -49,7 +49,7 @@ export default {
     // 只能通过监听 Player 组件是否全屏的方式来保证滚动条的滚动是正常的。
     // 直接通过 store 获取会让 progress 组件与 Player 的全屏状态产生
     // 强耦合，更好的方式是通过 props 传递。 这里懒得改了
-    const fullScreen = computed(() => store.state.singerModule.fullScreen)
+    const fullScreen = computed(() => store.state.musicModule.fullScreen)
 
     // **--||如果想要在后台也一直修改 progress 的状态，来保证
     // 切换到全屏时候的进度条是平滑的，而不是出现跳跃的情况

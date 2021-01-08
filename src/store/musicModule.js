@@ -1,11 +1,12 @@
 import { playMode } from '@/config/config'
-import * as types from './singerModuleType'
+import * as types from './musicModuleType'
 import { shuffle } from '@/utils/utils'
 
 export default {
   namespaced: true,
   state: () => ({
     singer: {},
+    disc: {},
     playing: false,
     fullScreen: false,
     playList: [],
@@ -16,6 +17,9 @@ export default {
   mutations: {
     [types.SET_SINGER](state, singer) {
       state.singer = singer
+    },
+    [types.SET_DISC](state, disc) {
+      state.disc = disc
     },
     [types.SET_PLAYING](state, flag) {
       state.playing = flag
