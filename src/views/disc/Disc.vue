@@ -11,6 +11,7 @@
 
 <script>
 import MusicList from '@/components/music-list/index.vue'
+import { getSongList } from '@/api/recommend'
 import { ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -24,7 +25,7 @@ export default {
     const store = useStore()
     const router = useRouter()
     const disc = store.state.musicModule.disc
-    console.log('disc--', disc)
+
     watch(
       () => disc,
       currentVal => {
@@ -36,6 +37,19 @@ export default {
 
     const songs = ref([])
     const musicRef = ref(null)
+
+    _getSongList()
+
+    function _getSongList() {
+      getSongList(disc.dissid)
+        .then(res => {
+          console.log('songs', res.data)
+          songs.value = res.data
+        })
+        .catch(rej => {
+          console.log(rej)
+        })
+    }
 
     return { disc, songs, musicRef }
   }
