@@ -91,7 +91,6 @@ export default {
 
     function selectDisc(item) {
       store.commit('musicModule/setDisc', item)
-      console.log(item)
       router.push({ path: `/recommend/${item.dissid}` })
     }
 

@@ -15,6 +15,10 @@ import { getSongList } from '@/api/recommend'
 import { ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import { createSong, processSongsUrl } from '@/lib/Song'
+import { HttpCode } from '@/lib/enum'
+
+const { ERR_OK } = HttpCode
 
 export default {
   name: 'Disc',
@@ -43,12 +47,26 @@ export default {
     function _getSongList() {
       getSongList(disc.dissid)
         .then(res => {
-          console.log('songs', res.data)
-          songs.value = res.data
+          console.log('songs', res)
+          if (res.code === ERR_OK) {
+            processSongsUrl(_normalize(res.cdlist[0].songlist)).then(songList => {
+              songs.value = songList
+            })
+          }
         })
         .catch(rej => {
           console.log(rej)
         })
+    }
+
+    function _normalize(list) {
+      const ret = []
+      list.forEach(item => {
+        if (item.songid && item.albumid) {
+          return ret.push(createSong(item))
+        }
+      })
+      return ret
     }
 
     return { disc, songs, musicRef }
