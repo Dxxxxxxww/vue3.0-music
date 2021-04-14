@@ -1,8 +1,12 @@
-import Vuex from 'vuex'
-import musicModule from './musicModule'
+import { createStore } from 'vuex'
 
-export default Vuex.createStore({
+export default createStore({
+  state: {
+  },
+  mutations: {
+  },
+  actions: {
+  },
   modules: {
-    musicModule
   }
 })
