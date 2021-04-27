@@ -9,7 +9,7 @@ export function useSlider(wrapperRef) {
   const currentPageIndex = ref(0)
 
   onMounted(() => {
-    const sliderVal = (slider.value = new BScroll(wrapperRef, {
+    const sliderVal = (slider.value = new BScroll(wrapperRef.value, {
       click: true,
       scrollX: true,
       scrollY: false,
@@ -19,7 +19,7 @@ export function useSlider(wrapperRef) {
       slide: true
     }))
 
-    sliderVal.value.on('slideWillChange', page => {
+    sliderVal.on('slideWillChange', page => {
       currentPageIndex.value = page.pageX
     })
   })
