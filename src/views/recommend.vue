@@ -1,6 +1,5 @@
 <template>
-  <div class="recommend">
-    <!--     v-loading="loading"-->
+  <div class="recommend" v-loading="loading">
     <scroll class="recommend-content">
       <div>
         <div class="slider-wrapper">
@@ -18,8 +17,7 @@
               @click="selectItem(item)"
             >
               <div class="icon">
-                <img width="60" height="60" />
-                <!--                 v-lazy="item.pic"-->
+                <img width="60" height="60" v-lazy="item.pic" />
               </div>
               <div class="text">
                 <h2 class="name">
