@@ -3,15 +3,17 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import lazyPlugin from 'vue3-lazy'
-// import '@/directives'
-import loadingDirective from '@/components/base/loading/directive'
+import registerDirective from '@/directives'
 import '@/assets/scss/index.scss'
 
-createApp(App)
+const app = createApp(App)
+
+registerDirective(app)
+
+app
   .use(store)
   .use(router)
   .use(lazyPlugin, {
     loading: require('@/assets/images/default.png')
   })
-  .directive('loading', loadingDirective)
   .mount('#app')
