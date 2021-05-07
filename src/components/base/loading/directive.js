@@ -32,8 +32,10 @@ function remove(el) {
   el.removeChild(el.instance.$el)
 }
 
-function setTitle(el, title = '正在载入...') {
-  el.instance.setTitle(title)
+function setTitle(el, title) {
+  if (title) {
+    el.instance.setTitle(title)
+  }
 }
 
 export default loadingDirective

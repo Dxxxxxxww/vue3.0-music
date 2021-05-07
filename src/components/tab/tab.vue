@@ -1,10 +1,10 @@
 <template>
   <div class="tab">
     <router-link
-      class="tab-item"
       v-for="tab in tabs"
       :key="tab.path"
       :to="tab.path"
+      class="tab-item"
     >
       <span class="tab-link">
         {{tab.name}}

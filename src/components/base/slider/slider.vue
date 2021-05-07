@@ -1,7 +1,7 @@
 <template>
   <div class="slider" ref="rootRef">
     <div class="slider-group">
-      <div class="slider-page" v-for="item in sliders" :key="item.id">
+      <div v-for="item in sliders" :key="item.id" class="slider-page">
         <a :href="item.link">
           <img :src="item.pic" />
         </a>
