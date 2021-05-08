@@ -12,7 +12,7 @@ export function useScroll(wrapperRef, options, emit) {
       observeDOM: true,
       ...options
     })
-
+    console.log(options)
     if (options.probeType > 0) {
       scroll.value.on('scroll', pos => {
         emit('scroll', pos)
