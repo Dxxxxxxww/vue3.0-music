@@ -16,34 +16,32 @@
         </ul>
       </li>
     </ul>
-    <div v-show="fixedTitle" class="fixed" >
-<!--      :style="fixedStyle"-->
+    <div v-show="fixedTitle" class="fixed" :style="fixedStyle">
       <div class="fixed-title">{{ fixedTitle }}</div>
     </div>
-    <!--    <div-->
-    <!--      class="shortcut"-->
-    <!--      @touchstart.stop.prevent="onShortcutTouchStart"-->
-    <!--      @touchmove.stop.prevent="onShortcutTouchMove"-->
-    <!--      @touchend.stop.prevent-->
-    <!--    >-->
-    <!--      <ul>-->
-    <!--        <li-->
-    <!--          v-for="(item, index) in shortcutList"-->
-    <!--          :key="item"-->
-    <!--          :data-index="index"-->
-    <!--          class="item"-->
-    <!--          :class="{ current: currentIndex === index }"-->
-    <!--        >-->
-    <!--          {{ item }}-->
-    <!--        </li>-->
-    <!--      </ul>-->
-    <!--    </div>-->
+    <div class="shortcut">
+      <!--      @touchstart.stop.prevent="onShortcutTouchStart"-->
+      <!--      @touchmove.stop.prevent="onShortcutTouchMove"-->
+      <!--      @touchend.stop.prevent-->
+      <ul>
+        <li
+          v-for="(item, index) in shortcutList"
+          :key="item"
+          :data-index="index"
+          class="item"
+          :class="{ current: currentIndex === index }"
+        >
+          {{ item }}
+        </li>
+      </ul>
+    </div>
   </scroll>
 </template>
 
 <script>
 import Scroll from '@/components/base/scroll/scroll'
 import useFixed from './use-fixed'
+import { useShortcut } from './use-shortcut'
 
 export default {
   name: 'index-list',
@@ -57,12 +55,22 @@ export default {
     }
   },
   setup(props) {
-    const { groupRef, fixedTitle, fixedStyle, onScroll } = useFixed(props)
+    const {
+      groupRef,
+      fixedTitle,
+      fixedStyle,
+      currentIndex,
+      onScroll
+    } = useFixed(props)
+
+    const { shortcutList } = useShortcut(props)
 
     return {
       groupRef,
       fixedTitle,
       fixedStyle,
+      currentIndex,
+      shortcutList,
       onScroll
     }
   }
@@ -82,6 +90,7 @@ export default {
       height: 30px;
       line-height: 30px;
       padding-left: 20px;
+      text-align: left;
       font-size: $font-size-small;
       color: $color-text-l;
       background: $color-highlight-background;
@@ -111,6 +120,7 @@ export default {
       height: 30px;
       line-height: 30px;
       padding-left: 20px;
+      text-align: left;
       font-size: $font-size-small;
       color: $color-text-l;
       background: $color-highlight-background;
