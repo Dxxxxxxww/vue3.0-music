@@ -56,7 +56,8 @@ export default {
       }
     }
   },
-  setup(props) {
+  emits: ['select'],
+  setup(props, { emit }) {
     const {
       groupRef,
       fixedTitle,
@@ -72,7 +73,12 @@ export default {
       onShortcutTouchMove
     } = useShortcut(props, groupRef)
 
+    function onItemClick(item) {
+      emit('select', item)
+    }
+
     return {
+      onItemClick,
       // fixed
       groupRef,
       fixedTitle,

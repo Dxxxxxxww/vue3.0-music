@@ -1,6 +1,7 @@
 <template>
   <div v-loading="!singers.length" class="singer">
-    <index-list :data="singers"></index-list>
+    <index-list :data="singers" @select="selectSinger"></index-list>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -19,6 +20,11 @@ export default {
   async created() {
     const { singers } = await getSingerList()
     this.singers = singers
+  },
+  methods: {
+    selectSinger(singer) {
+      this.$router.push({ path: `/singer/${singer.mid}` })
+    }
   }
 }
 </script>
