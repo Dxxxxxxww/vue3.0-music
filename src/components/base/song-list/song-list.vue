@@ -92,11 +92,13 @@ export default {
       overflow: hidden;
       .name {
         @include no-wrap();
-        color: $color-text
+        text-align: left;
+        color: $color-text;
       }
       .desc {
         @include no-wrap();
         margin-top: 4px;
+        text-align: left;
         color: $color-text-d;
       }
     }

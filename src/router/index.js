@@ -23,7 +23,7 @@ const routes = [
     children: [
       {
         name: '歌手详情',
-        path: ':id',
+        path: ':mid',
         component: SingerDetail,
         props: true
       }
