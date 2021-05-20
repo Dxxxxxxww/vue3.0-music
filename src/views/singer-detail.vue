@@ -1,28 +1,34 @@
 <template>
   <div class="singer-detail">
-    <!--    <music-list-->
-    <!--      :songs="songs"-->
-    <!--      :title="title"-->
-    <!--      :pic="pic"-->
-    <!--      :loading="loading"-->
-    <!--    ></music-list>-->
+    <music-list
+      :songs="songs"
+      :title="title"
+      :pic="pic"
+      :loading="loading"
+    ></music-list>
   </div>
 </template>
 
 <script>
 import { getSingerDetail } from '@/service/singer'
-// import MusicList from '@/components/music-list/music-list'
 import { processSongs } from '@/service/song'
+import MusicList from '@/components/music-list/music-list'
 
 export default {
   name: 'singer-detail',
   components: {
-    // MusicList
+    MusicList
   },
   props: {
     id: {
       type: [String, Number],
       default: ''
+    },
+    singer: {
+      type: Object,
+      default() {
+        return {}
+      }
     }
   },
   data() {
@@ -30,10 +36,21 @@ export default {
       songs: []
     }
   },
-
+  computed: {
+    pic() {
+      return this.singer?.pic ?? ''
+    },
+    title() {
+      return this.singer?.name ?? ''
+    },
+    loading() {
+      return !this.songs.length
+    }
+  },
   async created() {
     const { songs } = await getSingerDetail(this.id)
     this.songs = await processSongs(songs)
+    console.log(this.singer)
   }
 }
 </script>

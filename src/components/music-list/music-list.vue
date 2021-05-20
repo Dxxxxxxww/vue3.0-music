@@ -17,10 +17,10 @@
       class="list"
       :style="scrollStyle"
       v-loading="loading"
-      v-no-result:[noResultText]="noResult"
       :probe-type="3"
       @scroll="onScroll"
     >
+      <!--      v-no-result:[noResultText]="noResult"-->
       <div class="song-list-wrapper">
         <song-list :songs="songs" @select="selectItem" :rank="rank"></song-list>
       </div>
@@ -29,8 +29,111 @@
 </template>
 
 <script>
+import Scroll from '@/components/base/scroll/scroll'
+import SongList from '@/components/base/song-list/song-list'
+
+const RESERVED_HEIGHT = 40
+
 export default {
-  name: 'music-list'
+  name: 'music-list',
+  components: {
+    Scroll,
+    SongList
+  },
+  props: {
+    songs: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    title: {
+      type: String,
+      default: ''
+    },
+    pic: {
+      type: String,
+      default: ''
+    },
+    loading: Boolean
+  },
+  data() {
+    return {
+      imageHeight: 0,
+      scrollY: 0,
+      maxTranslateY: 0
+    }
+  },
+  computed: {
+    bgImageStyle() {
+      const scrollY = this.scrollY
+      let height = 0,
+        paddingBottom = '70%',
+        zIndex = 0,
+        scale = 1,
+        // 兼容 ios 移动端问题
+        translateZ = 0
+      // 当大于最大距离时，就说明需要留出头部位置了
+      if (scrollY > this.maxTranslateY) {
+        zIndex = 10
+        paddingBottom = '0'
+        height = `${RESERVED_HEIGHT}px`
+        translateZ = 1
+      }
+
+      // 向下滑
+      if (scrollY < 0) {
+        scale = 1 + Math.abs(scrollY / this.maxTranslateY)
+      }
+
+      return {
+        zIndex,
+        paddingBottom,
+        height,
+        backgroundImage: `url(${this.pic})`,
+        transform: `scale(${scale})translateZ(${translateZ}px)`
+      }
+    },
+    playBtnStyle() {
+      return ''
+    },
+    // 图片模糊层处理
+    filterStyle() {
+      let blur = 0
+      const imageHeight = this.imageHeight,
+        scrollY = this.scrollY,
+        multiple = 20
+      // 向上滑动时
+      if (scrollY >= 0) {
+        // blur 的最大值是 最大向上滑动距离 / 图片高度
+        blur =
+          Math.min(this.maxTranslateY / imageHeight, scrollY / imageHeight) *
+          multiple
+      }
+      return {
+        backdropFilter: `blur(${blur}px)`
+      }
+    },
+    scrollStyle() {
+      return {
+        top: `${this.imageHeight}px`
+      }
+    }
+  },
+  mounted() {
+    this.imageHeight = this.$refs.bgImage.clientHeight
+  },
+  methods: {
+    onScroll(pos) {
+      this.scrollY = -pos.y
+      // 歌词列表向上滚动的最大距离
+      this.maxTranslateY = this.imageHeight - RESERVED_HEIGHT
+    },
+    goBack() {
+      this.$router.back()
+    },
+    random() {}
+  }
 }
 </script>
 
