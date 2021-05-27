@@ -71,12 +71,12 @@ export function useStyle(props) {
 
   onMounted(() => {
     imageHeight.value = bgImage.value.clientHeight
+    // 歌词列表向上滚动的最大距离
+    maxTranslateY.value = imageHeight.value - RESERVED_HEIGHT
   })
 
   function onScroll(pos) {
     scrollY.value = -pos.y
-    // 歌词列表向上滚动的最大距离
-    maxTranslateY.value = imageHeight.value - RESERVED_HEIGHT
   }
 
   return {

@@ -1,5 +1,5 @@
 <template>
-  <scroll class="index-list" ref="scrollRef" :probe-type="3" @scroll="onScroll">
+  <music-scroll class="index-list" ref="scrollRef" :probe-type="3" @scroll="onScroll">
     <ul ref="groupRef">
       <li v-for="group in data" :key="group.title" class="group">
         <h2 class="title">{{ group.title }}</h2>
@@ -37,17 +37,15 @@
         </li>
       </ul>
     </div>
-  </scroll>
+  </music-scroll>
 </template>
 
 <script>
-import Scroll from '@/components/base/scroll/scroll'
 import useFixed from './use-fixed'
 import { useShortcut } from './use-shortcut'
 
 export default {
   name: 'index-list',
-  components: { Scroll },
   props: {
     data: {
       type: Array,

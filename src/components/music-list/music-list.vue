@@ -13,34 +13,29 @@
       </div>
       <div class="filter" :style="filterStyle"></div>
     </div>
-    <scroll
+    <music-scroll
+      v-loading="loading"
+      v-no-result:[noResultText]="noResult"
       class="list"
       :style="scrollStyle"
-      v-loading="loading"
       :probe-type="3"
       @scroll="onScroll"
     >
       <!--      v-no-result:[noResultText]="noResult"-->
       <div class="song-list-wrapper">
-        <song-list :songs="songs" @select="selectItem" :rank="rank"></song-list>
+        <music-song-list :songs="songs" :rank="rank" @select="selectItem"></music-song-list>
       </div>
-    </scroll>
+    </music-scroll>
   </div>
 </template>
 
 <script>
-import Scroll from '@/components/base/scroll/scroll'
-import SongList from '@/components/base/song-list/song-list'
 import { useStyle } from './use-style'
 import { useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 export default {
   name: 'music-list',
-  components: {
-    Scroll,
-    SongList
-  },
   props: {
     songs: {
       type: Array,
@@ -56,11 +51,18 @@ export default {
       type: String,
       default: ''
     },
-    loading: Boolean
+    loading: Boolean,
+    noResultText: {
+      type: String,
+      default: '抱歉，没有找到可播放的歌曲'
+    }
   },
   setup(props) {
     const rank = ref(null)
     const router = useRouter()
+    const noResult = computed(() => {
+      return !props.loading && !props.songs.length
+    })
     const {
       bgImage,
       bgImageStyle,
@@ -78,6 +80,7 @@ export default {
 
     return {
       rank,
+      noResult,
       goBack,
       random,
       selectItem,

@@ -9,7 +9,7 @@ import { useScroll } from './use-scroll'
 import { ref } from 'vue'
 
 export default {
-  name: 'scroll',
+  name: 'music-scroll',
   props: {
     click: {
       type: Boolean,

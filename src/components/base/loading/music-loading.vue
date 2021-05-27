@@ -9,7 +9,7 @@
 
 <script>
 export default {
-  name: 'loading',
+  name: 'music-loading',
   data() {
     return {
       title: '正在载入...'

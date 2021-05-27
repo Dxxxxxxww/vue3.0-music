@@ -24,7 +24,7 @@ import { ref } from 'vue'
 import { useSlider } from './use-slider'
 
 export default {
-  name: 'slider',
+  name: 'music-slider',
   props: {
     sliders: {
       type: Array,

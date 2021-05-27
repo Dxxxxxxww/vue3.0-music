@@ -1,10 +1,10 @@
 <template>
   <div class="recommend" v-loading="loading">
-    <scroll class="recommend-content">
+    <music-scroll class="recommend-content">
       <div>
         <div class="slider-wrapper">
           <div class="slider-content">
-            <slider v-if="sliders.length" :sliders="sliders"></slider>
+            <music-slider v-if="sliders.length" :sliders="sliders"></music-slider>
           </div>
         </div>
         <div class="recommend-list">
@@ -31,7 +31,7 @@
           </ul>
         </div>
       </div>
-    </scroll>
+    </music-scroll>
     <!--    <router-view v-slot="{ Component }">-->
     <!--      <transition appear name="slide">-->
     <!--        <component :is="Component" :data="selectedAlbum" />-->
@@ -42,15 +42,9 @@
 
 <script>
 import { getRecommend } from '../service/recommend'
-import Slider from '@/components/base/slider/slider'
-import Scroll from '@/components/base/scroll/scroll'
 
 export default {
   name: 'recommend',
-  components: {
-    Slider,
-    Scroll
-  },
   data() {
     return {
       sliders: [],
