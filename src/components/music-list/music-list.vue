@@ -32,6 +32,7 @@
 <script>
 import { useStyle } from './use-style'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import { computed, ref } from 'vue'
 
 export default {
@@ -60,6 +61,7 @@ export default {
   setup(props) {
     const rank = ref(null)
     const router = useRouter()
+    const store = useStore()
     const noResult = computed(() => {
       return !props.loading && !props.songs.length
     })
@@ -76,7 +78,9 @@ export default {
       router.back()
     }
     function random() {}
-    function selectItem() {}
+    function selectItem({ song, index }) {
+      store.dispatch('selectPlay', { list: props.songs, index })
+    }
 
     return {
       rank,
