@@ -66,7 +66,13 @@ export function useStyle(props) {
   })
 
   const playBtnStyle = computed(() => {
-    return ''
+    let display = 'block'
+    if (scrollY.value >= maxTranslateY.value) {
+      display = 'none'
+    }
+    return {
+      display
+    }
   })
 
   onMounted(() => {

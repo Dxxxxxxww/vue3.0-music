@@ -77,7 +77,9 @@ export default {
     function goBack() {
       router.back()
     }
-    function random() {}
+    function random() {
+      store.dispatch('randomPlay', props.songs)
+    }
     function selectItem({ song, index }) {
       store.dispatch('selectPlay', { list: props.songs, index })
     }
