@@ -1,5 +1,10 @@
 <template>
-  <music-scroll class="index-list" ref="scrollRef" :probe-type="3" @scroll="onScroll">
+  <music-scroll
+    class="index-list"
+    ref="scrollRef"
+    :probe-type="3"
+    @scroll="onScroll"
+  >
     <ul ref="groupRef">
       <li v-for="group in data" :key="group.title" class="group">
         <h2 class="title">{{ group.title }}</h2>
@@ -43,6 +48,10 @@
 <script>
 import useFixed from './use-fixed'
 import { useShortcut } from './use-shortcut'
+// eslint-disable-next-line import/no-absolute-path
+// 测试导入根目录文件
+// import abc from '/test'
+// const path = require('path')
 
 export default {
   name: 'index-list',
@@ -64,6 +73,11 @@ export default {
       onScroll
     } = useFixed(props)
 
+    // abc()
+    // const resolve = dir => {
+    //   console.log(path.join(__dirname, dir), __dirname)
+    // }
+    // resolve('test')
     const {
       scrollRef,
       shortcutList,

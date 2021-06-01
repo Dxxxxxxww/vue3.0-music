@@ -1,9 +1,9 @@
 const registerRouter = require('./backend/router')
-// const path = require('path')
+const path = require('path')
 
-// const resolve = dir => {
-//   return path.join(__dirname, dir)
-// }
+const resolve = dir => {
+  return path.join(__dirname, dir)
+}
 
 module.exports = {
   css: {
@@ -20,13 +20,14 @@ module.exports = {
     before(app) {
       registerRouter(app)
     }
+  },
+  chainWebpack: config => {
+    config.resolve.alias
+      .set('@', resolve('src'))
+      .set('/test', resolve('test'))
+      // .set('@views', resolve('src/views'))
+      // .set('@components', resolve('src/components'))
+      // .set('@assets', resolve('src/assets'))
+      // .set('@styles', resolve('src/styles'))
   }
-  // chainWebpack: config => {
-  //   config.resolve.alias
-  //     .set('@', resolve('src'))
-  //     .set('@views', resolve('src/views'))
-  //     .set('@components', resolve('src/components'))
-  //     .set('@assets', resolve('src/assets'))
-  //     .set('@styles', resolve('src/styles'))
-  // }
 }
