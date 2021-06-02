@@ -11,8 +11,27 @@
         <h1 class="title">{{ currentSong.name }}</h1>
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
+      <div class="bottom">
+        <div class="operators">
+          <div class="icon i-left">
+            <i class="icon-sequence"></i>
+          </div>
+          <div class="icon i-left">
+            <i class="icon-prev" @click="prev"></i>
+          </div>
+          <div class="icon i-center">
+            <i :class="playIcon" @click="togglePlay"></i>
+          </div>
+          <div class="icon i-right">
+            <i class="icon-next" @click="next"></i>
+          </div>
+          <div class="icon i-right">
+            <i class="icon-not-favorite"></i>
+          </div>
+        </div>
+      </div>
     </div>
-    <audio ref="audioRef"></audio>
+    <audio ref="audioRef" @pause="pause"></audio>
   </div>
 </template>
 
@@ -31,6 +50,12 @@ export default {
     const audioRef = ref(null)
     const fullScreen = computed(() => store.state.fullScreen)
     const currentSong = computed(() => store.getters.currentSong)
+    const playing = computed(() => store.state.playing)
+    const playIcon = computed(() =>
+      playing.value ? 'icon-pause' : 'icon-play'
+    )
+    const playList = computed(() => store.state.playList)
+    const currentIndex = computed(() => store.state.currentIndex)
 
     watch(currentSong, newSong => {
       if (!newSong.id || !newSong.url) {
@@ -40,16 +65,81 @@ export default {
       audioEl.src = newSong.url
       audioEl.play()
     })
+    watch(playing, newPlaying => {
+      const audioEl = audioRef.value
+      newPlaying ? audioEl.play() : audioEl.pause()
+    })
 
     function goBack() {
       store.commit('setFullScreen', false)
+    }
+
+    function togglePlay() {
+      store.commit('setPlayingStatus', !playing.value)
+    }
+    // 手机关机等额外因素导致音乐暂停时需要更改数据
+    function pause() {
+      store.commit('setPlayingStatus', false)
+    }
+
+    function prev() {
+      const list = playList.value
+      if (!list.length) {
+        return
+      }
+      if (list.length === 1) {
+        loop()
+        return
+      }
+      let index = currentIndex.value - 1
+      if (index === -1) {
+        index = list.length - 1
+      }
+      store.commit('setCurrentIndex', index)
+      if (!playing.value) {
+        const audioEl = audioRef.value
+        audioEl.play()
+        store.commit('setPlayingStatus', true)
+      }
+    }
+
+    function next() {
+      const list = playList.value
+      if (!list.length) {
+        return
+      }
+      if (list.length === 1) {
+        loop()
+        return
+      }
+      let index = currentIndex.value + 1
+      if (index === list.length) {
+        index = 0
+      }
+      store.commit('setCurrentIndex', index)
+      if (!playing.value) {
+        const audioEl = audioRef.value
+        audioEl.play()
+        store.commit('setPlayingStatus', true)
+      }
+    }
+
+    function loop() {
+      const audioEl = audioRef.value
+      audioEl.currentTime = 0
+      audioEl.play()
     }
 
     return {
       audioRef,
       fullScreen,
       currentSong,
-      goBack
+      playIcon,
+      goBack,
+      togglePlay,
+      pause,
+      prev,
+      next
     }
   }
 }
