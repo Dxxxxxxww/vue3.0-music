@@ -14,15 +14,15 @@
       <div class="bottom">
         <div class="operators">
           <div class="icon i-left">
-            <i class="icon-sequence"></i>
+            <i :class="iconMode" @click="changeMode"></i>
           </div>
-          <div class="icon i-left">
+          <div class="icon i-left" :class="disabledClass">
             <i class="icon-prev" @click="prev"></i>
           </div>
-          <div class="icon i-center">
+          <div class="icon i-center" :class="disabledClass">
             <i :class="playIcon" @click="togglePlay"></i>
           </div>
-          <div class="icon i-right">
+          <div class="icon i-right" :class="disabledClass">
             <i class="icon-next" @click="next"></i>
           </div>
           <div class="icon i-right">
@@ -31,13 +31,19 @@
         </div>
       </div>
     </div>
-    <audio ref="audioRef" @pause="pause"></audio>
+    <audio
+      ref="audioRef"
+      @pause="pause"
+      @canplay="ready"
+      @error="error"
+    ></audio>
   </div>
 </template>
 
 <script>
 import { useStore } from 'vuex'
 import { computed, ref, watch } from 'vue'
+import useMode from '@/components/player/use-mode'
 // import Scroll from '@/components/base/scroll/music-scroll'
 
 export default {
@@ -46,45 +52,63 @@ export default {
   //   Scroll
   // },
   setup() {
-    const store = useStore()
+    // data
     const audioRef = ref(null)
+    // 播放器是否准备就绪标签
+    const songReady = ref(false)
+    // vuex
+    const store = useStore()
     const fullScreen = computed(() => store.state.fullScreen)
     const currentSong = computed(() => store.getters.currentSong)
     const playing = computed(() => store.state.playing)
+    const playList = computed(() => store.state.playList)
+    const currentIndex = computed(() => store.state.currentIndex)
+    // computed
+    // 通过判断播放器是否准备就绪来切换样式
+    const disabledClass = computed(() => (songReady.value ? '' : 'disable'))
     const playIcon = computed(() =>
       playing.value ? 'icon-pause' : 'icon-play'
     )
-    const playList = computed(() => store.state.playList)
-    const currentIndex = computed(() => store.state.currentIndex)
-
+    // watch
+    // 监听歌曲变化
     watch(currentSong, newSong => {
       if (!newSong.id || !newSong.url) {
         return
       }
+      // 歌曲变动后重置标签
+      songReady.value = false
       const audioEl = audioRef.value
       audioEl.src = newSong.url
       audioEl.play()
     })
+    // 监听点击暂停取消，更改音乐播放
     watch(playing, newPlaying => {
+      // fix: 问题播放器还没有准备就绪就直接播放的问题
+      if (!songReady.value) {
+        return
+      }
       const audioEl = audioRef.value
       newPlaying ? audioEl.play() : audioEl.pause()
     })
-
+    // hooks
+    const { iconMode, changeMode } = useMode()
+    // function
     function goBack() {
       store.commit('setFullScreen', false)
     }
 
     function togglePlay() {
+      // 如果播放器还没准备好
+      if (!songReady.value) {
+        return
+      }
       store.commit('setPlayingStatus', !playing.value)
-    }
-    // 手机关机等额外因素导致音乐暂停时需要更改数据
-    function pause() {
-      store.commit('setPlayingStatus', false)
     }
 
     function prev() {
       const list = playList.value
-      if (!list.length) {
+      // 如果播放器还没准备好或者没有歌曲
+      if (!songReady.value || !list.length) {
         return
       }
       if (list.length === 1) {
@@ -105,7 +129,8 @@ export default {
 
     function next() {
       const list = playList.value
-      if (!list.length) {
+      // 如果播放器还没准备好或者没有歌曲
+      if (!songReady.value || !list.length) {
         return
       }
       if (list.length === 1) {
@@ -123,23 +148,49 @@ export default {
         store.commit('setPlayingStatus', true)
       }
     }
-
+    // 循环播放
     function loop() {
       const audioEl = audioRef.value
       audioEl.currentTime = 0
       audioEl.play()
     }
+    // event
+    // 手机关机等额外因素导致音乐暂停时需要更改数据
+    function pause() {
+      store.commit('setPlayingStatus', false)
+    }
+    // 播放器准备就绪时的回调
+    function ready() {
+      if (songReady.value) {
+        return
+      }
+      songReady.value = true
+    }
+    // 播放器异常捕获
+    // 歌曲无法播放的话需要将标签设置为 true，否则无法切换歌曲
+    function error() {
+      songReady.value = true
+    }
 
     return {
+      // ref
       audioRef,
+      // computed
       fullScreen,
       currentSong,
       playIcon,
+      disabledClass,
+      // function
       goBack,
       togglePlay,
-      pause,
       prev,
-      next
+      next,
+      pause,
+      ready,
+      error,
+      // useMode
+      iconMode,
+      changeMode
     }
   }
 }
