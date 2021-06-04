@@ -26,7 +26,10 @@
             <i class="icon-next" @click="next"></i>
           </div>
           <div class="icon i-right">
-            <i class="icon-not-favorite"></i>
+            <i
+              :class="getFavoriteIcon(currentSong)"
+              @click="toggleFavorite(currentSong)"
+            ></i>
           </div>
         </div>
       </div>
@@ -43,7 +46,8 @@
 <script>
 import { useStore } from 'vuex'
 import { computed, ref, watch } from 'vue'
-import useMode from '@/components/player/use-mode'
+import useMode from './use-mode'
+import useFavorite from './use-favorite'
 // import Scroll from '@/components/base/scroll/music-scroll'
 
 export default {
@@ -92,6 +96,7 @@ export default {
     })
     // hooks
     const { iconMode, changeMode } = useMode()
+    const { getFavoriteIcon, toggleFavorite } = useFavorite()
     // function
     function goBack() {
       store.commit('setFullScreen', false)
@@ -190,7 +195,10 @@ export default {
       error,
       // useMode
       iconMode,
-      changeMode
+      changeMode,
+      // useFavorite
+      getFavoriteIcon,
+      toggleFavorite
     }
   }
 }
