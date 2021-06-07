@@ -12,6 +12,15 @@
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
       <div class="bottom">
+        <div class="progress-wrapper">
+          <span class="time time-l">{{ formatTime(currentTime) }}</span>
+          <div class="progress-bar-wrapper">
+            <progress-bar ref="barRef" :progress="progress"></progress-bar>
+          </div>
+          <span class="time time-r">{{
+            formatTime(currentSong.duration)
+          }}</span>
+        </div>
         <div class="operators">
           <div class="icon i-left">
             <i :class="iconMode" @click="changeMode"></i>
@@ -39,6 +48,7 @@
       @pause="pause"
       @canplay="ready"
       @error="error"
+      @timeupdate="updateTime"
     ></audio>
   </div>
 </template>
@@ -48,18 +58,22 @@ import { useStore } from 'vuex'
 import { computed, ref, watch } from 'vue'
 import useMode from './use-mode'
 import useFavorite from './use-favorite'
+import ProgressBar from './progress-bar'
+import { formatTime } from '@/assets/js/util'
 // import Scroll from '@/components/base/scroll/music-scroll'
 
 export default {
   name: 'player',
-  // components: {
-  //   Scroll
-  // },
+  components: {
+    // Scroll
+    ProgressBar
+  },
   setup() {
     // data
     const audioRef = ref(null)
     // 播放器是否准备就绪标签
     const songReady = ref(false)
+    const currentTime = ref(0)
     // vuex
     const store = useStore()
     const fullScreen = computed(() => store.state.fullScreen)
@@ -73,6 +87,9 @@ export default {
     const playIcon = computed(() =>
       playing.value ? 'icon-pause' : 'icon-play'
     )
+    const progress = computed(
+      () => currentTime.value / currentSong.value.duration
+    )
     // watch
     // 监听歌曲变化
     watch(currentSong, newSong => {
@@ -81,6 +98,7 @@ export default {
       }
       // 歌曲变动后重置标签
       songReady.value = false
+      currentTime.value = 0
       const audioEl = audioRef.value
       audioEl.src = newSong.url
       audioEl.play()
@@ -176,23 +194,34 @@ export default {
     function error() {
       songReady.value = true
     }
+    // 更新播放时间
+    function updateTime(e) {
+      currentTime.value = e.target.currentTime
+    }
 
     return {
+      // tools
+      formatTime,
       // ref
       audioRef,
+      // data
+      currentTime,
       // computed
       fullScreen,
       currentSong,
       playIcon,
       disabledClass,
+      progress,
       // function
       goBack,
       togglePlay,
       prev,
       next,
+      // event
       pause,
       ready,
       error,
+      updateTime,
       // useMode
       iconMode,
       changeMode,

@@ -18,8 +18,9 @@ export function shuffle(source) {
 }
 
 export function formatTime(interval) {
+  // | 0 向下取整
   interval = interval | 0
   const minute = (((interval / 60) | 0) + '').padStart(2, '0')
-  const second = ((interval % 60) + '').padStart(2, '0')
-  return `${minute}:${second}`
+  const secondes = ((interval % 60) + '').padStart(2, '0')
+  return `${minute}:${secondes}`
 }
