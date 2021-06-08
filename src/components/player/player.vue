@@ -11,11 +11,30 @@
         <h1 class="title">{{ currentSong.name }}</h1>
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
+      <div class="middle">
+        <div class="middle-l">
+          <div class="cd-wrapper">
+            <div ref="cdRef" class="cd">
+              <img
+                ref="cdImgRef"
+                class="image"
+                :class="cdCls"
+                :src="currentSong.pic"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="bottom">
         <div class="progress-wrapper">
           <span class="time time-l">{{ formatTime(currentTime) }}</span>
           <div class="progress-bar-wrapper">
-            <progress-bar ref="barRef" :progress="progress"></progress-bar>
+            <progress-bar
+              ref="barRef"
+              :progress="progress"
+              @progress-changing="onProgressChanging"
+              @progress-changed="onProgressChanged"
+            ></progress-bar>
           </div>
           <span class="time time-r">{{
             formatTime(currentSong.duration)
@@ -49,6 +68,7 @@
       @canplay="ready"
       @error="error"
       @timeupdate="updateTime"
+      @ended="end"
     ></audio>
   </div>
 </template>
@@ -60,6 +80,8 @@ import useMode from './use-mode'
 import useFavorite from './use-favorite'
 import ProgressBar from './progress-bar'
 import { formatTime } from '@/assets/js/util'
+import { PLAY_MODE } from '@/assets/js/constant'
+import useCd from '@/components/player/use-cd'
 // import Scroll from '@/components/base/scroll/music-scroll'
 
 export default {
@@ -70,6 +92,7 @@ export default {
   },
   setup() {
     // data
+    let progressChanging = false
     const audioRef = ref(null)
     // 播放器是否准备就绪标签
     const songReady = ref(false)
@@ -81,6 +104,7 @@ export default {
     const playing = computed(() => store.state.playing)
     const playList = computed(() => store.state.playList)
     const currentIndex = computed(() => store.state.currentIndex)
+    const playMode = computed(() => store.state.playMode)
     // computed
     // 通过判断播放器是否准备就绪来切换样式
     const disabledClass = computed(() => (songReady.value ? '' : 'disable'))
@@ -113,13 +137,16 @@ export default {
       newPlaying ? audioEl.play() : audioEl.pause()
     })
     // hooks
+    // 切换播放模式
     const { iconMode, changeMode } = useMode()
+    // 收藏歌曲
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
+    const { cdRef, cdImgRef, cdCls } = useCd()
     // function
     function goBack() {
       store.commit('setFullScreen', false)
     }
-
+    // 切换播放器播放状态
     function togglePlay() {
       // 如果播放器还没准备好
       if (!songReady.value) {
@@ -127,13 +154,14 @@ export default {
       }
       store.commit('setPlayingStatus', !playing.value)
     }
-
+    // 上一首歌曲
     function prev() {
       const list = playList.value
       // 如果播放器还没准备好或者没有歌曲
       if (!songReady.value || !list.length) {
         return
       }
+      // 如果播放列表只有一首歌就循环播放
       if (list.length === 1) {
         loop()
         return
@@ -144,12 +172,11 @@ export default {
       }
       store.commit('setCurrentIndex', index)
       if (!playing.value) {
-        const audioEl = audioRef.value
-        audioEl.play()
+        audioRef.value.play()
         store.commit('setPlayingStatus', true)
       }
     }
-
+    // 下一首歌曲
     function next() {
       const list = playList.value
       // 如果播放器还没准备好或者没有歌曲
@@ -166,8 +193,7 @@ export default {
       }
       store.commit('setCurrentIndex', index)
       if (!playing.value) {
-        const audioEl = audioRef.value
-        audioEl.play()
+        audioRef.value.play()
         store.commit('setPlayingStatus', true)
       }
     }
@@ -176,6 +202,7 @@ export default {
       const audioEl = audioRef.value
       audioEl.currentTime = 0
       audioEl.play()
+      store.commit('setPlayingStatus', true)
     }
     // event
     // 手机关机等额外因素导致音乐暂停时需要更改数据
@@ -196,7 +223,33 @@ export default {
     }
     // 更新播放时间
     function updateTime(e) {
-      currentTime.value = e.target.currentTime
+      if (!progressChanging) {
+        currentTime.value = e.target.currentTime
+      }
+    }
+    // 移动进度条监听事件，只更改显示的当前播放时间
+    function onProgressChanging(progress) {
+      progressChanging = true
+      currentTime.value = progress * currentSong.value.duration
+    }
+    // 移动进度条结束监听事件
+    function onProgressChanged(progress) {
+      progressChanging = false
+      // 将播放时间赋值给 audio 元素 更改歌曲播放时间
+      audioRef.value.currentTime = currentTime.value =
+        progress * currentSong.value.duration
+      if (!playing.value) {
+        store.commit('setPlayingStatus', true)
+      }
+    }
+
+    // audio 播放完毕后的触发事件，除此之外，还会自动调用 pause 事件
+    function end() {
+      if (playMode.value === PLAY_MODE.loop) {
+        loop()
+      } else {
+        next()
+      }
     }
 
     return {
@@ -222,12 +275,19 @@ export default {
       ready,
       error,
       updateTime,
+      end,
+      onProgressChanging,
+      onProgressChanged,
       // useMode
       iconMode,
       changeMode,
       // useFavorite
       getFavoriteIcon,
-      toggleFavorite
+      toggleFavorite,
+      // useCd
+      cdRef,
+      cdImgRef,
+      cdCls
     }
   }
 }
