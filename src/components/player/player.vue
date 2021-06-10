@@ -12,7 +12,7 @@
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
       <div class="middle">
-        <div class="middle-l">
+        <div class="middle-l" style="display: none;">
           <div class="cd-wrapper">
             <div ref="cdRef" class="cd">
               <img
@@ -24,6 +24,20 @@
             </div>
           </div>
         </div>
+        <scroll ref="lyricScrollRef" class="middle-r">
+          <div class="lyric-wrapper">
+            <div v-if="currentLyric" ref="lyricListRef">
+              <p
+                v-for="(line, index) of currentLyric.lines"
+                :key="line.num"
+                class="text"
+                :class="{ current: currentLineNum === index }"
+              >
+                {{ line.txt }}
+              </p>
+            </div>
+          </div>
+        </scroll>
       </div>
       <div class="bottom">
         <div class="progress-wrapper">
@@ -82,12 +96,13 @@ import ProgressBar from './progress-bar'
 import { formatTime } from '@/assets/js/util'
 import { PLAY_MODE } from '@/assets/js/constant'
 import useCd from '@/components/player/use-cd'
-// import Scroll from '@/components/base/scroll/music-scroll'
+import useLyric from '@/components/player/use-lyric'
+import Scroll from '@/components/base/scroll/music-scroll'
 
 export default {
   name: 'player',
   components: {
-    // Scroll
+    Scroll,
     ProgressBar
   },
   setup() {
@@ -117,6 +132,7 @@ export default {
     // watch
     // 监听歌曲变化
     watch(currentSong, newSong => {
+      // 判断歌曲合法
       if (!newSong.id || !newSong.url) {
         return
       }
@@ -127,14 +143,20 @@ export default {
       audioEl.src = newSong.url
       audioEl.play()
     })
-    // 监听点击暂停取消，更改音乐播放
+    // 监听点击暂停，更改音乐播放
     watch(playing, newPlaying => {
       // fix: 问题播放器还没有准备就绪就直接播放的问题
       if (!songReady.value) {
         return
       }
       const audioEl = audioRef.value
-      newPlaying ? audioEl.play() : audioEl.pause()
+      if (newPlaying) {
+        audioEl.play()
+        playLyric()
+      } else {
+        audioEl.pause()
+        stopLyric()
+      }
     })
     // hooks
     // 切换播放模式
@@ -142,6 +164,17 @@ export default {
     // 收藏歌曲
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
     const { cdRef, cdImgRef, cdCls } = useCd()
+    const {
+      lyricScrollRef,
+      lyricListRef,
+      currentLyric,
+      currentLineNum,
+      playLyric,
+      stopLyric
+    } = useLyric({
+      songReady,
+      currentTime
+    })
     // function
     function goBack() {
       store.commit('setFullScreen', false)
@@ -215,6 +248,8 @@ export default {
         return
       }
       songReady.value = true
+      // 如果歌曲先于歌词准备完毕，需要等歌词准备完毕才能播放歌词
+      playLyric()
     }
     // 播放器异常捕获
     // 歌曲无法播放的话需要将标签设置为 true，否则无法切换歌曲
@@ -231,6 +266,10 @@ export default {
     function onProgressChanging(progress) {
       progressChanging = true
       currentTime.value = progress * currentSong.value.duration
+      // 拖动时歌词要滚动到对应位置，但是不能自动滚动
+      // 所以先用 playLyric 将歌词定位到对应位置，再用 stopLyric 暂停歌词
+      playLyric()
+      stopLyric()
     }
     // 移动进度条结束监听事件
     function onProgressChanged(progress) {
@@ -241,6 +280,8 @@ export default {
       if (!playing.value) {
         store.commit('setPlayingStatus', true)
       }
+      // 拖动进度条结束后，在当前位置播放歌词
+      playLyric()
     }
 
     // audio 播放完毕后的触发事件，除此之外，还会自动调用 pause 事件
@@ -287,7 +328,12 @@ export default {
       // useCd
       cdRef,
       cdImgRef,
-      cdCls
+      cdCls,
+      // useLyric
+      lyricScrollRef,
+      lyricListRef,
+      currentLyric,
+      currentLineNum
     }
   }
 }

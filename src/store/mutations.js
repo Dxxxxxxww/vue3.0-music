@@ -19,6 +19,13 @@ const mutations = {
   },
   setFullScreen(state, fullScreen) {
     state.fullScreen = fullScreen
+  },
+  setSongLyric(state, { song, lyric }) {
+    state.playList.forEach(item => {
+      if (item.mid === song.mid) {
+        item.lyric = lyric
+      }
+    })
   }
 }
 
