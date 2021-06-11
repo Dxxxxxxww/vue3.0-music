@@ -6,10 +6,12 @@ import Lyric from 'lyric-parser'
 export default function useLyric({ songReady, currentTime }) {
   const store = useStore()
   // 格式化歌词实例
-  const currentLyric = ref(null)
-  const currentLineNum = ref(0)
   const lyricScrollRef = ref(null)
   const lyricListRef = ref(null)
+  const currentLyric = ref(null)
+  const currentLineNum = ref(0)
+  const pureMusicLyric = ref('')
+  const playingLyric = ref('')
   // 获取当前歌曲
   const currentSong = computed(() => store.getters.currentSong)
   // 监听歌曲变化，异步获取歌词
@@ -17,15 +19,13 @@ export default function useLyric({ songReady, currentTime }) {
     if (!newSong.url || !newSong.id) {
       return
     }
-    // 如果已有歌词则直接返回，节约请求
-    if (newSong.lyric) {
-      return
-    }
     // 切换歌曲时暂停歌词滚动
     stopLyric()
     // 防止切换歌曲过快导致歌词滚动时跳动，需要将歌词重置
     currentLineNum.value = 0
     currentLyric.value = null
+    pureMusicLyric.value = ''
+    playingLyric.value = ''
     // 获取歌词
     const lyric = await getLyric(newSong)
     // 给歌曲本身添加歌词
@@ -36,16 +36,23 @@ export default function useLyric({ songReady, currentTime }) {
     }
     // 创建格式化后的歌词实例
     currentLyric.value = new Lyric(lyric, handleLyric)
-    // 歌曲准备好后才可以播放歌词
-    // 如果歌词先于歌曲准备完毕，也要等歌曲准备完毕才能播放歌词
-    if (songReady.value) {
-      playLyric()
+    const hasLyric = currentLyric.value.lines.length
+    if (hasLyric) {
+      // 歌曲准备好后才可以播放歌词
+      // 如果歌词先于歌曲准备完毕，也要等歌曲准备完毕才能播放歌词
+      if (songReady.value) {
+        playLyric()
+      }
+    } else {
+      pureMusicLyric.value = lyric.replace(/\[(\d{2}):(\d{2}):(\d{2})\]/g, '')
     }
   })
 
-  function handleLyric({ lineNum }) {
+  function handleLyric({ lineNum, txt }) {
     // 获取当前歌词的行数
     currentLineNum.value = lineNum
+    // 获取当前歌词
+    playingLyric.value = txt
     // 获取 scroll
     const lyricComp = lyricScrollRef.value
     // 获取 歌词数组 元素
@@ -81,6 +88,8 @@ export default function useLyric({ songReady, currentTime }) {
     lyricListRef,
     currentLyric,
     currentLineNum,
+    playingLyric,
+    pureMusicLyric,
     playLyric,
     stopLyric
   }

@@ -22,6 +22,10 @@ export function processSongs(songs) {
 }
 
 export function getLyric(song) {
+  // 如果已有歌词则直接返回，节约请求
+  if (song.lyric) {
+    return Promise.resolve(song.lyric)
+  }
   // 不同歌曲存在 mid （不同演唱版本）相同的情况，所以将歌词缓存下来，节约请求
   const lyric = lyricMap[song.mid]
   if (lyric) {
