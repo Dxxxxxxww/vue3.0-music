@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { getLyric } from '@/service/song'
 import Lyric from 'lyric-parser'
 
-export default function useLyric({ songReady, currentTime }) {
+export default function useLyric({ songReady, currentTime, canLyricScroll }) {
   const store = useStore()
   // 格式化歌词实例
   const lyricScrollRef = ref(null)
@@ -12,6 +12,7 @@ export default function useLyric({ songReady, currentTime }) {
   const currentLineNum = ref(0)
   const pureMusicLyric = ref('')
   const playingLyric = ref('')
+  let increaseFlag = 0
   // 获取当前歌曲
   const currentSong = computed(() => store.getters.currentSong)
   // 监听歌曲变化，异步获取歌词
@@ -48,6 +49,16 @@ export default function useLyric({ songReady, currentTime }) {
     }
   })
 
+  watch(canLyricScroll, (nv) => {
+    increaseFlag += 1
+    console.log('watch', increaseFlag, nv)
+    // // 获取歌词固定滚动位置的元素，让歌词在屏幕中间滚动
+    // setTimeout(() => {
+    //   const lineEl = listEl.children[lineNum - 5]
+    //   lyricComp.scroll.scrollToElement(lineEl, 1000)
+    // }, 200)
+  })
+
   function handleLyric({ lineNum, txt }) {
     // 获取当前歌词的行数
     currentLineNum.value = lineNum
@@ -57,6 +68,10 @@ export default function useLyric({ songReady, currentTime }) {
     const lyricComp = lyricScrollRef.value
     // 获取 歌词数组 元素
     const listEl = lyricListRef.value
+    // 如果用户在滚动，则歌词停止自动滚动
+    if (!canLyricScroll.value) {
+      return
+    }
     // 滚动至对应的歌词元素
     if (lineNum > 5) {
       // 获取歌词固定滚动位置的元素，让歌词在屏幕中间滚动

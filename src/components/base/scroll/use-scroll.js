@@ -16,6 +16,9 @@ export function useScroll(wrapperRef, options, emit) {
       scroll.value.on('scroll', pos => {
         emit('scroll', pos)
       })
+      scroll.value.on('scrollEnd', pos => {
+        emit('scrollEnd', pos)
+      })
     }
   })
 

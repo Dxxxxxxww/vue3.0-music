@@ -20,7 +20,7 @@ export default {
       default: 0
     }
   },
-  emits: ['scroll'],
+  emits: ['scroll', 'scrollEnd'],
   setup(props, { emit }) {
     const rootRef = ref(null)
     const { scroll } = useScroll(rootRef, props, emit)

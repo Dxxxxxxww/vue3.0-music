@@ -32,7 +32,11 @@
             <div class="playing-lyric">{{ playingLyric }}</div>
           </div>
         </div>
-        <scroll ref="lyricScrollRef" class="middle-r" :style="middleRStyle">
+        <music-scroll
+          ref="lyricScrollRef"
+          class="middle-r"
+          :style="middleRStyle"
+        >
           <div class="lyric-wrapper">
             <div v-if="currentLyric" ref="lyricListRef">
               <p
@@ -48,7 +52,7 @@
               <p>{{ pureMusicLyric }}</p>
             </div>
           </div>
-        </scroll>
+        </music-scroll>
       </div>
       <div class="bottom">
         <div class="dot-wrapper">
@@ -112,13 +116,11 @@ import { formatTime } from '@/assets/js/util'
 import { PLAY_MODE } from '@/assets/js/constant'
 import useCd from '@/components/player/use-cd'
 import useLyric from '@/components/player/use-lyric'
-import Scroll from '@/components/base/scroll/music-scroll'
 import useMiddleInteractive from '@/components/player/use-middle-interactive'
 
 export default {
   name: 'player',
   components: {
-    Scroll,
     ProgressBar
   },
   setup() {
@@ -128,6 +130,7 @@ export default {
     // 播放器是否准备就绪标签
     const songReady = ref(false)
     const currentTime = ref(0)
+
     // vuex
     const store = useStore()
     const fullScreen = computed(() => store.state.fullScreen)
@@ -181,6 +184,15 @@ export default {
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
     const { cdRef, cdImgRef, cdCls } = useCd()
     const {
+      currentShow,
+      middleLStyle,
+      middleRStyle,
+      canLyricScroll,
+      onTouchStart,
+      onTouchMove,
+      onTouchEnd
+    } = useMiddleInteractive()
+    const {
       lyricScrollRef,
       lyricListRef,
       currentLyric,
@@ -191,16 +203,9 @@ export default {
       stopLyric
     } = useLyric({
       songReady,
-      currentTime
+      currentTime,
+      canLyricScroll
     })
-    const {
-      currentShow,
-      middleLStyle,
-      middleRStyle,
-      onTouchStart,
-      onTouchMove,
-      onTouchEnd
-    } = useMiddleInteractive()
     // function
     function goBack() {
       store.commit('setFullScreen', false)
@@ -309,7 +314,6 @@ export default {
       // 拖动进度条结束后，在当前位置播放歌词
       playLyric()
     }
-
     // audio 播放完毕后的触发事件，除此之外，还会自动调用 pause 事件
     function end() {
       if (playMode.value === PLAY_MODE.loop) {
