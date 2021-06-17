@@ -5,14 +5,20 @@ import Lyric from 'lyric-parser'
 
 export default function useLyric({ songReady, currentTime, canLyricScroll }) {
   const store = useStore()
-  // 格式化歌词实例
+  // scroll ref
   const lyricScrollRef = ref(null)
+  // 歌词列表ref
   const lyricListRef = ref(null)
+  // 当前歌词
   const currentLyric = ref(null)
+  // 当前歌词行数
   const currentLineNum = ref(0)
+  // 格式化后的歌词
   const pureMusicLyric = ref('')
+  // 当前播放歌词
   const playingLyric = ref('')
-  let increaseFlag = 0
+  // 用户手动滚动结束标志
+  const userScrollEnd = ref(false)
   // 获取当前歌曲
   const currentSong = computed(() => store.getters.currentSong)
   // 监听歌曲变化，异步获取歌词
@@ -49,29 +55,40 @@ export default function useLyric({ songReady, currentTime, canLyricScroll }) {
     }
   })
 
-  watch(canLyricScroll, (nv) => {
-    increaseFlag += 1
-    console.log('watch', increaseFlag, nv)
-    // // 获取歌词固定滚动位置的元素，让歌词在屏幕中间滚动
-    // setTimeout(() => {
-    //   const lineEl = listEl.children[lineNum - 5]
-    //   lyricComp.scroll.scrollToElement(lineEl, 1000)
-    // }, 200)
+  watch(canLyricScroll, newVal => {
+    if (newVal) {
+      // console.time()
+      userScrollEnd.value = false
+      // 用户手动滚动结束后定时滚动到当前歌词
+      setTimeout(() => {
+        scrollToCurrentLyric(currentLineNum.value)
+        userScrollEnd.value = true
+        // console.timeEnd()
+      }, 3000)
+    }
   })
-
+  // 歌词播放的回调函数
   function handleLyric({ lineNum, txt }) {
     // 获取当前歌词的行数
     currentLineNum.value = lineNum
     // 获取当前歌词
     playingLyric.value = txt
-    // 获取 scroll
-    const lyricComp = lyricScrollRef.value
-    // 获取 歌词数组 元素
-    const listEl = lyricListRef.value
     // 如果用户在滚动，则歌词停止自动滚动
     if (!canLyricScroll.value) {
       return
     }
+    // 如果用户滚动结束后，自动倒计时滚动歌词，不进行歌词自动跳转
+    if (!userScrollEnd.value) {
+      return
+    }
+    scrollToCurrentLyric(lineNum)
+  }
+  // 滚动到当前歌词
+  function scrollToCurrentLyric(lineNum) {
+    // 获取 scroll
+    const lyricComp = lyricScrollRef.value
+    // 获取 歌词数组 元素
+    const listEl = lyricListRef.value
     // 滚动至对应的歌词元素
     if (lineNum > 5) {
       // 获取歌词固定滚动位置的元素，让歌词在屏幕中间滚动
