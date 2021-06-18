@@ -20,6 +20,7 @@ export default function useCd() {
   function syncTransform(wrapper, inner) {
     const wrapperTransform = getComputedStyle(wrapper).transform
     const innerTransform = getComputedStyle(inner).transform
+    console.log(wrapperTransform, innerTransform)
     // wrapperTransform 初始值为 none
     // 内部旋转是基于父容器的，所以当第二次及后续都要将之前的旋转角度给加上
     wrapper.style.transform =
