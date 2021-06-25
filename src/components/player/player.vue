@@ -1,100 +1,111 @@
 <template>
   <div v-show="playList.length" class="player">
-    <div v-show="fullScreen" class="normal-player">
-      <div class="background">
-        <img :src="currentSong.pic" />
-      </div>
-      <div class="top">
-        <div class="back" @click="goBack">
-          <i class="icon-back"></i>
+    <transition
+      name="normal"
+      @enter="enter"
+      @after-enter="afterEnter"
+      @leave="leave"
+      @after-leave="afterLeave"
+    >
+      <div v-show="fullScreen" class="normal-player">
+        <div class="background">
+          <img :src="currentSong.pic" />
         </div>
-        <h1 class="title">{{ currentSong.name }}</h1>
-        <h2 class="subtitle">{{ currentSong.singer }}</h2>
-      </div>
-      <div
-        class="middle"
-        @touchstart.prevent="onTouchStart"
-        @touchmove.prevent="onTouchMove"
-        @touchend.prevent="onTouchEnd"
-      >
-        <div class="middle-l" :style="middleLStyle">
-          <div class="cd-wrapper">
-            <div ref="cdRef" class="cd">
-              <img
-                ref="cdImgRef"
-                class="image"
-                :class="cdCls"
-                :src="currentSong.pic"
-              />
-            </div>
+        <div class="top">
+          <div class="back" @click="goBack">
+            <i class="icon-back"></i>
           </div>
-          <div class="playing-lyric-wrapper">
-            <div class="playing-lyric">{{ playingLyric }}</div>
-          </div>
+          <h1 class="title">{{ currentSong.name }}</h1>
+          <h2 class="subtitle">{{ currentSong.singer }}</h2>
         </div>
-        <music-scroll
-          ref="lyricScrollRef"
-          class="middle-r"
-          :style="middleRStyle"
+        <div
+          class="middle"
+          @touchstart.prevent="onTouchStart"
+          @touchmove.prevent="onTouchMove"
+          @touchend.prevent="onTouchEnd"
         >
-          <div class="lyric-wrapper">
-            <div v-if="currentLyric" ref="lyricListRef">
-              <p
-                v-for="(line, index) of currentLyric.lines"
-                :key="line.num"
-                class="text"
-                :class="{ current: currentLineNum === index }"
-              >
-                {{ line.txt }}
-              </p>
+          <div class="middle-l" :style="middleLStyle">
+            <div ref="cdWrapperRef" class="cd-wrapper">
+              <div ref="cdRef" class="cd">
+                <img
+                  ref="cdImgRef"
+                  class="image"
+                  :class="cdCls"
+                  :src="currentSong.pic"
+                />
+              </div>
             </div>
-            <div v-show="pureMusicLyric" class="pure-music">
-              <p>{{ pureMusicLyric }}</p>
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric">{{ playingLyric }}</div>
             </div>
           </div>
-        </music-scroll>
+          <music-scroll
+            ref="lyricScrollRef"
+            class="middle-r"
+            :style="middleRStyle"
+          >
+            <div class="lyric-wrapper">
+              <div v-if="currentLyric" ref="lyricListRef">
+                <p
+                  v-for="(line, index) of currentLyric.lines"
+                  :key="line.num"
+                  class="text"
+                  :class="{ current: currentLineNum === index }"
+                >
+                  {{ line.txt }}
+                </p>
+              </div>
+              <div v-show="pureMusicLyric" class="pure-music">
+                <p>{{ pureMusicLyric }}</p>
+              </div>
+            </div>
+          </music-scroll>
+        </div>
+        <div class="bottom">
+          <div class="dot-wrapper">
+            <span class="dot" :class="{ active: currentShow === 'cd' }"></span>
+            <span
+              class="dot"
+              :class="{ active: currentShow === 'lyric' }"
+            ></span>
+          </div>
+          <div class="progress-wrapper">
+            <span class="time time-l">{{ formatTime(currentTime) }}</span>
+            <div class="progress-bar-wrapper">
+              <progress-bar
+                ref="barRef"
+                :progress="progress"
+                @progress-changing="onProgressChanging"
+                @progress-changed="onProgressChanged"
+              ></progress-bar>
+            </div>
+            <span class="time time-r">{{
+              formatTime(currentSong.duration)
+            }}</span>
+          </div>
+          <div class="operators">
+            <div class="icon i-left">
+              <i :class="iconMode" @click="changeMode"></i>
+            </div>
+            <div class="icon i-left" :class="disabledClass">
+              <i class="icon-prev" @click="prev"></i>
+            </div>
+            <div class="icon i-center" :class="disabledClass">
+              <i :class="playIcon" @click="togglePlay"></i>
+            </div>
+            <div class="icon i-right" :class="disabledClass">
+              <i class="icon-next" @click="next"></i>
+            </div>
+            <div class="icon i-right">
+              <i
+                :class="getFavoriteIcon(currentSong)"
+                @click="toggleFavorite(currentSong)"
+              ></i>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="bottom">
-        <div class="dot-wrapper">
-          <span class="dot" :class="{ active: currentShow === 'cd' }"></span>
-          <span class="dot" :class="{ active: currentShow === 'lyric' }"></span>
-        </div>
-        <div class="progress-wrapper">
-          <span class="time time-l">{{ formatTime(currentTime) }}</span>
-          <div class="progress-bar-wrapper">
-            <progress-bar
-              ref="barRef"
-              :progress="progress"
-              @progress-changing="onProgressChanging"
-              @progress-changed="onProgressChanged"
-            ></progress-bar>
-          </div>
-          <span class="time time-r">{{
-            formatTime(currentSong.duration)
-          }}</span>
-        </div>
-        <div class="operators">
-          <div class="icon i-left">
-            <i :class="iconMode" @click="changeMode"></i>
-          </div>
-          <div class="icon i-left" :class="disabledClass">
-            <i class="icon-prev" @click="prev"></i>
-          </div>
-          <div class="icon i-center" :class="disabledClass">
-            <i :class="playIcon" @click="togglePlay"></i>
-          </div>
-          <div class="icon i-right" :class="disabledClass">
-            <i class="icon-next" @click="next"></i>
-          </div>
-          <div class="icon i-right">
-            <i
-              :class="getFavoriteIcon(currentSong)"
-              @click="toggleFavorite(currentSong)"
-            ></i>
-          </div>
-        </div>
-      </div>
-    </div>
+    </transition>
     <audio
       ref="audioRef"
       @pause="pause"
@@ -110,14 +121,15 @@
 <script>
 import { useStore } from 'vuex'
 import { computed, ref, watch } from 'vue'
+import { PLAY_MODE } from '@/assets/js/constant'
 import useMode from './use-mode'
 import useFavorite from './use-favorite'
 import ProgressBar from './progress-bar'
 import { formatTime } from '@/assets/js/util'
-import { PLAY_MODE } from '@/assets/js/constant'
 import useCd from '@/components/player/use-cd'
 import useLyric from '@/components/player/use-lyric'
 import useMiddleInteractive from '@/components/player/use-middle-interactive'
+import useAnimation from '@/components/player/use-animation'
 import MiniPlayer from './mini-player'
 
 export default {
@@ -133,6 +145,7 @@ export default {
     // 播放器是否准备就绪标签
     const songReady = ref(false)
     const currentTime = ref(0)
+    const wrapperTransform = ref('')
 
     // vuex
     const store = useStore()
@@ -164,6 +177,7 @@ export default {
       const audioEl = audioRef.value
       audioEl.src = newSong.url
       audioEl.play()
+      store.commit('setPlayingStatus', true)
     })
     // 监听点击暂停，更改音乐播放
     watch(playing, newPlaying => {
@@ -180,35 +194,17 @@ export default {
         stopLyric()
       }
     })
-    // hooks
-    // 切换播放模式
-    const { iconMode, changeMode } = useMode()
-    // 收藏歌曲
-    const { getFavoriteIcon, toggleFavorite } = useFavorite()
-    const { cdRef, cdImgRef, cdCls } = useCd()
-    const {
-      currentShow,
-      middleLStyle,
-      middleRStyle,
-      canLyricScroll,
-      onTouchStart,
-      onTouchMove,
-      onTouchEnd
-    } = useMiddleInteractive()
-    const {
-      lyricScrollRef,
-      lyricListRef,
-      currentLyric,
-      currentLineNum,
-      pureMusicLyric,
-      playingLyric,
-      playLyric,
-      stopLyric
-    } = useLyric({
-      songReady,
-      currentTime,
-      canLyricScroll
-    })
+    // 同步 player 和 miniPlayer 的 cd 旋转角度 未完成
+    // watch(fullScreen, newVal => {
+    //   // const cdRefVal = cdRef.value
+    //   if (newVal) {
+    //     cdRef.value.style.transform = store.state.wrapperTransform
+    //     console.log('player--', store.state.wrapperTransform)
+    //   }
+    //   // else {
+    //   //   store.commit('setWrapperTransform', cdRefVal.style.transform)
+    //   // }
+    // })
     // function
     function goBack() {
       store.commit('setFullScreen', false)
@@ -238,10 +234,6 @@ export default {
         index = list.length - 1
       }
       store.commit('setCurrentIndex', index)
-      if (!playing.value) {
-        audioRef.value.play()
-        store.commit('setPlayingStatus', true)
-      }
     }
     // 下一首歌曲
     function next() {
@@ -259,10 +251,6 @@ export default {
         index = 0
       }
       store.commit('setCurrentIndex', index)
-      if (!playing.value) {
-        audioRef.value.play()
-        store.commit('setPlayingStatus', true)
-      }
     }
     // 循环播放
     function loop() {
@@ -325,6 +313,47 @@ export default {
         next()
       }
     }
+    // function setWrapperTransform(value) {
+    //   wrapperTransform.value = value
+    //   const cdRefVal = cdRef.value
+    //   cdRefVal.style.transform = value
+    // }
+    // hooks
+    // 切换播放模式
+    const { iconMode, changeMode } = useMode()
+    // 收藏歌曲
+    const { getFavoriteIcon, toggleFavorite } = useFavorite()
+    const { cdRef, cdImgRef, cdCls } = useCd()
+    const {
+      currentShow,
+      middleLStyle,
+      middleRStyle,
+      canLyricScroll,
+      onTouchStart,
+      onTouchMove,
+      onTouchEnd
+    } = useMiddleInteractive()
+    const {
+      lyricScrollRef,
+      lyricListRef,
+      currentLyric,
+      currentLineNum,
+      pureMusicLyric,
+      playingLyric,
+      playLyric,
+      stopLyric
+    } = useLyric({
+      songReady,
+      currentTime,
+      canLyricScroll
+    })
+    const {
+      cdWrapperRef,
+      enter,
+      afterEnter,
+      leave,
+      afterLeave
+    } = useAnimation()
 
     return {
       // tools
@@ -333,6 +362,7 @@ export default {
       audioRef,
       // data
       currentTime,
+      wrapperTransform,
       // computed
       fullScreen,
       currentSong,
@@ -353,6 +383,7 @@ export default {
       end,
       onProgressChanging,
       onProgressChanged,
+      // setWrapperTransform,
       // useMode
       iconMode,
       changeMode,
@@ -376,7 +407,13 @@ export default {
       middleRStyle,
       onTouchStart,
       onTouchMove,
-      onTouchEnd
+      onTouchEnd,
+      // useAnimation
+      cdWrapperRef,
+      enter,
+      afterEnter,
+      leave,
+      afterLeave
     }
   }
 }

@@ -3,31 +3,51 @@
     <div v-show="!fullScreen" class="mini-player" @click="showNormalPlayer">
       <div class="cd-wrapper">
         <div ref="cdRef" class="cd">
-          <img ref="cdImgRef" width="40" height="40" :src="currentSong.pic" :class="cdCls" />
+          <img
+            ref="cdImgRef"
+            width="40"
+            height="40"
+            :src="currentSong.pic"
+            :class="cdCls"
+          />
         </div>
       </div>
-      <div class="slider-wrapper">
-        <h2 class="name">{{ currentSong.name }}</h2>
-        <p class="desc">{{ currentSong.singer }}</p>
+      <div ref="sliderWrapperRef" class="slider-wrapper">
+        <div class="slider-group">
+          <div v-for="song of playList" :key="song.id" class="slider-page">
+            <h2 class="name">{{ song.name }}</h2>
+            <p class="desc">{{ song.singer }}</p>
+          </div>
+        </div>
       </div>
       <div class="control">
         <progress-circle :radius="32" :progress="progress">
-          <i class="icon-mini" @click.stop="togglePlay"></i>
+          <i
+            class="icon-mini"
+            :class="miniPlayIcon"
+            @click.stop="togglePlay"
+          ></i>
         </progress-circle>
       </div>
+      <div class="control" @click.stop="showPlayList">
+        <i class="icon-playlist"></i>
+      </div>
+      <play-list ref="playListRef"></play-list>
     </div>
   </transition>
 </template>
 
 <script>
 import { useStore } from 'vuex'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import useCd from './use-cd'
 import ProgressCircle from './progress-circle'
+import useMiniSlider from '@/components/player/use-mini-slider'
+import PlayList from './play-list'
 
 export default {
   name: 'mini-player',
-  components: { ProgressCircle },
+  components: { ProgressCircle, PlayList },
   props: {
     progress: {
       type: Number,
@@ -36,31 +56,58 @@ export default {
     togglePlay: Function
   },
   setup() {
+    // refs
+    const playListRef = ref(null)
+    // vuex
     const store = useStore()
     const fullScreen = computed(() => store.state.fullScreen)
     const currentSong = computed(() => store.getters.currentSong)
+    const playList = computed(() => store.state.playList)
     const playing = computed(() => store.state.playing)
+    // computed
     const miniPlayIcon = computed(() =>
       playing.value ? 'icon-pause' : 'icon-play-mini'
     )
-
-    const { cdRef, cdImgRef, cdCls } = useCd()
-
+    // 同步 player 和 miniPlayer 的 cd 旋转角度
+    // watch(fullScreen, newVal => {
+    // const cdRefVal = cdRef.value
+    // if (!newVal) {
+    //   cdRef.value.style.transform = store.state.wrapperTransform
+    //   console.log('miniplayer--', store.state.wrapperTransform)
+    // }
+    // else {
+    //   store.commit('setWrapperTransform', cdRefVal.style.transform)
+    //   emit('cc', cdRefVal.style.transform)
+    // }
+    // })
     function showNormalPlayer() {
       store.commit('setFullScreen', true)
     }
 
+    function showPlayList() {
+      playListRef.value.show()
+    }
+    // hooks
+    const { cdRef, cdImgRef, cdCls } = useCd()
+    const { sliderWrapperRef } = useMiniSlider()
+
     return {
-      // computed
+      playListRef,
+      // vuex
       fullScreen,
       currentSong,
+      playList,
+      // computed
       miniPlayIcon,
       // function
       showNormalPlayer,
+      showPlayList,
       // useCd
       cdRef,
       cdImgRef,
-      cdCls
+      cdCls,
+      // useMiniSlider
+      sliderWrapperRef
     }
   }
 }
@@ -110,6 +157,7 @@ export default {
       .slider-page {
         display: inline-block;
         width: 100%;
+        text-align: left;
         transform: translate3d(0, 0, 0);
         backface-visibility: hidden;
         .name {

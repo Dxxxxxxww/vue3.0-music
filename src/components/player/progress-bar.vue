@@ -32,7 +32,9 @@ export default {
     // const
     const instance = getCurrentInstance()
     // data
+    // 偏移量
     const offset = ref(0)
+    // 进度条固定宽度
     const barWidth = ref(0)
     const touch = ref({})
     const progressRef = ref(null)
@@ -49,7 +51,9 @@ export default {
         // 在 3.x 中可以使用 getCurrentInstance，
         // 对于使用了片段(多根组件)的组件，$el 是占位 DOM 节点，
         // Vue 使用它来跟踪组件在 DOM 中的位置。建议使用模板引用（ref）来直接访问 DOM 元素，而不是依赖于 $el
-        // barWidth 只计算一次就可以了
+        // 因为 barWidth 是固定不变的，所以只计算一次就可以了
+        // 并且这样可以解决当 miniplayer 暂停/播放 时，切换到 player 进度条计算的偏移bug
+        // player display none 的时候获取不到 $el
         if (!barWidth.value || barWidth.value < 0) {
           barWidth.value = instance.ctx.$el.clientWidth - BTN_WIDTH
         }

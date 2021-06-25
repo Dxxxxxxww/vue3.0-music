@@ -26,6 +26,9 @@ const mutations = {
         item.lyric = lyric
       }
     })
+  },
+  setWrapperTransform(state, transform) {
+    state.wrapperTransform = transform
   }
 }
 
