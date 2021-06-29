@@ -13,7 +13,7 @@
       </div>
       <div class="filter" :style="filterStyle"></div>
     </div>
-    <music-scroll
+    <Scroll
       v-loading="loading"
       v-no-result:[noResultText]="noResult"
       class="list"
@@ -23,9 +23,13 @@
     >
       <!--      v-no-result:[noResultText]="noResult"-->
       <div class="song-list-wrapper">
-        <music-song-list :songs="songs" :rank="rank" @select="selectItem"></music-song-list>
+        <music-song-list
+          :songs="songs"
+          :rank="rank"
+          @select="selectItem"
+        ></music-song-list>
       </div>
-    </music-scroll>
+    </Scroll>
   </div>
 </template>
 
@@ -34,9 +38,13 @@ import { useStyle } from './use-style'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { computed, ref } from 'vue'
+import Scroll from '@/components/wrapper-scroll'
 
 export default {
   name: 'music-list',
+  components: {
+    Scroll
+  },
   props: {
     songs: {
       type: Array,

@@ -1,10 +1,5 @@
 <template>
-  <music-scroll
-    class="index-list"
-    ref="scrollRef"
-    :probe-type="3"
-    @scroll="onScroll"
-  >
+  <Scroll class="index-list" ref="scrollRef" :probe-type="3" @scroll="onScroll">
     <ul ref="groupRef">
       <li v-for="group in data" :key="group.title" class="group">
         <h2 class="title">{{ group.title }}</h2>
@@ -42,12 +37,13 @@
         </li>
       </ul>
     </div>
-  </music-scroll>
+  </Scroll>
 </template>
 
 <script>
 import useFixed from './use-fixed'
 import { useShortcut } from './use-shortcut'
+import Scroll from '@/components/wrapper-scroll'
 // eslint-disable-next-line import/no-absolute-path
 // 测试导入根目录文件
 // import abc from '/test'
@@ -55,6 +51,9 @@ import { useShortcut } from './use-shortcut'
 
 export default {
   name: 'index-list',
+  components: {
+    Scroll
+  },
   props: {
     data: {
       type: Array,

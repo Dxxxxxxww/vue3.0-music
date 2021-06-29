@@ -1,11 +1,12 @@
 <template>
-  <MHeader/>
-  <Tab/>
-  <router-view/>
+  <MHeader />
+  <Tab />
+  <router-view :style="viewStyle" />
   <player></player>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import Header from '@/components/header/header'
 import Tab from '@/components/tab/tab'
 import Player from '@/components/player/player'
@@ -15,6 +16,15 @@ export default {
     MHeader: Header,
     Tab,
     Player
+  },
+  computed: {
+    ...mapState(['playList']),
+    viewStyle() {
+      const bottom = this.playList.length ? '60px' : '0'
+      return {
+        bottom
+      }
+    }
   }
 }
 </script>

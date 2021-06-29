@@ -1,4 +1,5 @@
 import { computed, onMounted, ref } from 'vue'
+import { useStore } from 'vuex'
 
 export function useStyle(props) {
   const RESERVED_HEIGHT = 40
@@ -7,6 +8,9 @@ export function useStyle(props) {
   const maxTranslateY = ref(0)
   const imageHeight = ref(0)
   const bgImage = ref(null)
+
+  const store = useStore()
+  const playList = computed(() => store.state.playList)
 
   const bgImageStyle = computed(() => {
     const scrollYVal = scrollY.value,
@@ -60,8 +64,10 @@ export function useStyle(props) {
   })
 
   const scrollStyle = computed(() => {
+    const bottom = playList.value.length ? '60px' : '0'
     return {
-      top: `${imageHeight.value}px`
+      top: `${imageHeight.value}px`,
+      bottom
     }
   })
 

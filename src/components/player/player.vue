@@ -195,7 +195,7 @@ export default {
       }
     })
     // 同步 player 和 miniPlayer 的 cd 旋转角度 未完成
-    // watch(fullScreen, newVal => {
+    // 最简单的，两个cd一起旋转，只不过把小的隐藏了， zindex = -1
     //   // const cdRefVal = cdRef.value
     //   if (newVal) {
     //     cdRef.value.style.transform = store.state.wrapperTransform
