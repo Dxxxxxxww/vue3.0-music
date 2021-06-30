@@ -4,7 +4,10 @@
       <div>
         <div class="slider-wrapper">
           <div class="slider-content">
-            <music-slider v-if="sliders.length" :sliders="sliders"></music-slider>
+            <music-slider
+              v-if="sliders.length"
+              :sliders="sliders"
+            ></music-slider>
           </div>
         </div>
         <div class="recommend-list">
@@ -32,23 +35,26 @@
         </div>
       </div>
     </music-scroll>
-    <!--    <router-view v-slot="{ Component }">-->
-    <!--      <transition appear name="slide">-->
-    <!--        <component :is="Component" :data="selectedAlbum" />-->
-    <!--      </transition>-->
-    <!--    </router-view>-->
+    <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component :is="Component" :data="selectedAlbum" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
 <script>
 import { getRecommend } from '../service/recommend'
+import storage from 'good-storage'
+import { ALBUM_KEY } from '@/assets/js/constant'
 
 export default {
   name: 'recommend',
   data() {
     return {
       sliders: [],
-      albums: []
+      albums: [],
+      selectedAlbum: {}
     }
   },
   computed: {
@@ -62,7 +68,16 @@ export default {
     this.albums = albums
   },
   methods: {
-    selectItem() {}
+    selectItem(item) {
+      this.selectedAlbum = item
+      this.cacheAlbum(item)
+      this.$router.push({
+        path: `/recommend/${item.id}`
+      })
+    },
+    cacheAlbum(album) {
+      storage.session.set(ALBUM_KEY, album)
+    }
   }
 }
 </script>
