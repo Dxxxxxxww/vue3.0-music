@@ -17,7 +17,7 @@ export function processSongs(songs) {
         song.url = map[song.mid]
         return song
       })
-      .filter(song => song.url.includes('vkey'))
+      .filter(song => song.url && song.url.includes('vkey'))
   })
 }
 

@@ -21,7 +21,6 @@
       :probe-type="3"
       @scroll="onScroll"
     >
-      <!--      v-no-result:[noResultText]="noResult"-->
       <div class="song-list-wrapper">
         <music-song-list
           :songs="songs"
