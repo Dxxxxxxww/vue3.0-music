@@ -6,6 +6,7 @@ const Search = () => import('@/views/search.vue')
 const Singer = () => import('@/views/singer.vue')
 const TopList = () => import('@/views/top-list.vue')
 const SingerDetail = () => import('@/views/singer-detail.vue')
+const TopDetail = () => import('@/views/top-detail')
 
 const routes = [
   {
@@ -41,7 +42,15 @@ const routes = [
   {
     name: '排行',
     path: '/top-list',
-    component: TopList
+    component: TopList,
+    children: [
+      {
+        name: '排行详情',
+        path: ':id',
+        component: TopDetail,
+        props: true
+      }
+    ]
   },
   {
     name: '搜索',

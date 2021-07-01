@@ -37,7 +37,7 @@
 import { useStyle } from './use-style'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import Scroll from '@/components/wrapper-scroll'
 
 export default {
@@ -64,10 +64,13 @@ export default {
     noResultText: {
       type: String,
       default: '抱歉，没有找到可播放的歌曲'
+    },
+    rank: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {
-    const rank = ref(null)
     const router = useRouter()
     const store = useStore()
     const noResult = computed(() => {
@@ -93,7 +96,6 @@ export default {
     }
 
     return {
-      rank,
       noResult,
       goBack,
       random,

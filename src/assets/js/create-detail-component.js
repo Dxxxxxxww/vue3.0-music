@@ -13,12 +13,7 @@ export default function createDetailComponent(name, key, fetch) {
         type: [String, Number],
         default: ''
       },
-      data: {
-        type: Object,
-        default() {
-          return null
-        }
-      }
+      data: Object
     },
     data() {
       return {
@@ -29,15 +24,13 @@ export default function createDetailComponent(name, key, fetch) {
       computedData() {
         const data = this.data
         let ret
-        if (data) {
+        if (data.id || data.mid) {
           ret = data
-          console.log(data)
         } else {
           const cache = storage.session.get(key)
-          if (cache && (cache.id + '' || cache.mid) === this.$route.params.id) {
+          if (cache && (cache.mid || cache.id + '') === this.$route.params.id) {
             ret = cache
           }
-          console.log(data, 2)
         }
         return ret
       },
