@@ -32,6 +32,8 @@ export default {
   setup() {
     const scrollRef = ref(null)
     const store = useStore()
+    // 监听是否有歌曲播放，从而刷新 scroll
+    // 解决 mini-player 组件出现时的滚动高度问题，mini-player 会遮住列表
     const playList = computed(() => store.state.playList)
     // better-scroll 实例
     // 用计算属性返回是因为，如果直接返回的话，当 dom 没有渲染， scrollRef 为 null，会有问题

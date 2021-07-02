@@ -33,6 +33,7 @@ export default {
       this.singer = singer
       this.cacheSinger(singer)
       this.$router.push({ path: `/singer/${singer.mid}` })
+      console.log(this.$router, this.$route)
     },
     cacheSinger(singer) {
       storage.session.set(SINGER_KEY, singer)

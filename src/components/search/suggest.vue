@@ -27,14 +27,16 @@
           <p class="text">{{ song.singer }}--{{ song.name }}</p>
         </div>
       </li>
+      <div v-loading:[loadingText]="pullUpLoading" class="suggest-item"></div>
     </ul>
   </div>
 </template>
 
 <script>
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { search } from '@/service/search'
 import { processSongs } from '@/service/song'
+import usePullUpLoad from './use-pull-up-load'
 
 export default {
   name: 'suggest',
@@ -45,7 +47,8 @@ export default {
       default: true
     }
   },
-  setup(props) {
+  emits: ['select-song', 'select-singer'],
+  setup(props, { emit }) {
     // data
     const loadingText = ref('')
     const page = ref(1)
@@ -53,21 +56,32 @@ export default {
     const songs = ref([])
     const singer = ref(null)
     const noResultText = ref('抱歉，暂无搜索结果')
+    const manualLoading = ref(false)
     // computed
     const loading = computed(() => !singer.value && !songs.value.length)
     const noResult = computed(
       () => !singer.value && !songs.value.length && !hasMore.value
     )
+    const pullUpLoading = computed(() => isPullUpload.value && hasMore.value)
+    // 在首次加载或者自动加载时阻止上拉加载
+    const preventPullUpLoad = computed(
+      () => loading.value || manualLoading.value
+    )
     // watch
     watch(
       () => props.query,
       async newQuery => {
-        await searchFirst(newQuery)
+        if (newQuery) {
+          await searchFirst(newQuery)
+        }
       }
     )
     // function
     // 查询时的搜索
     async function searchFirst(query) {
+      if (!query) {
+        return
+      }
       // 清空前一次数据
       page.value = 1
       hasMore.value = true
@@ -78,10 +92,47 @@ export default {
       songs.value = await processSongs(result.songs)
       singer.value = result.singer
       hasMore.value = result.hasMore
+      // 如果数据不满足一屏，则继续请求
+      await nextTick()
+      await makeItScroll()
     }
-    function selectSinger() {}
 
-    function selectSong() {}
+    async function searchMore() {
+      if (!hasMore.value || !props.query) {
+        return
+      }
+      page.value++
+      const result = await search(props.query, page.value, props.showSinger)
+      songs.value = songs.value.concat(await processSongs(result.songs))
+      singer.value = result.singer
+      hasMore.value = result.hasMore
+      await nextTick()
+      // 单页数据不满一屏时继续加载下一页数据
+      await makeItScroll()
+    }
+    // 单页数据不满一屏时继续加载下一页数据
+    async function makeItScroll() {
+      // 如果 scroll 不满足滚动条件，父容器高度大于内容高度。
+      if (scroll.value.maxScrollY >= -1) {
+        manualLoading.value = true
+        await searchMore()
+        manualLoading.value = false
+      }
+    }
+
+    function selectSinger(singer) {
+      emit('select-singer', singer)
+    }
+
+    function selectSong(song) {
+      emit('select-song', song)
+    }
+
+    // hooks
+    const { rootRef, scroll, isPullUpload } = usePullUpLoad(
+      searchMore,
+      preventPullUpLoad
+    )
 
     return {
       // data
@@ -92,9 +143,13 @@ export default {
       // computed
       loading,
       noResult,
+      pullUpLoading,
       // function
       selectSinger,
-      selectSong
+      selectSong,
+      // usePullUpLoad
+      rootRef,
+      isPullUpload
     }
   }
 }

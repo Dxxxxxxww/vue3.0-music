@@ -47,7 +47,7 @@ export function createLoadingLikeDirective(Comp) {
   }
 
   function setTitle(el, title) {
-    if (title) {
+    if (typeof title !== 'undefined') {
       el[name].instance.setTitle(title)
     }
   }

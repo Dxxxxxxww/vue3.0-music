@@ -12,7 +12,7 @@
             <h1 class="title">
               <i class="icon" :class="iconMode" @click="changeMode"></i>
               <span class="text">{{ modeText }}</span>
-              <span class="clear" @click="confirmClear">
+              <span class="clear" @click="showConfirm">
                 <i class="icon-clear"></i>
               </span>
             </h1>
@@ -156,6 +156,10 @@ export default {
       // 如果播放列表没有歌曲，则隐藏播放列表
       hide()
     }
+    // 展示清空confirm
+    function showConfirm() {
+      confirmRef.value.show()
+    }
     // hooks
     const { iconMode, modeText, changeMode } = useMode()
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
@@ -176,6 +180,7 @@ export default {
       selectItem,
       removeSong,
       confirmClear,
+      showConfirm,
       // useMode
       iconMode,
       modeText,

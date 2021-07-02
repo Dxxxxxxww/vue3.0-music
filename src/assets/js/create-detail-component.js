@@ -28,7 +28,8 @@ export default function createDetailComponent(name, key, fetch) {
           ret = data
         } else {
           const cache = storage.session.get(key)
-          if (cache && (cache.mid || cache.id + '') === this.$route.params.id) {
+          // this.$route.params.id
+          if (cache && (cache.mid || cache.id + '') === this.id) {
             ret = cache
           }
         }

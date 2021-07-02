@@ -63,6 +63,27 @@ const actions = {
     commit('setSequenceList', [])
     commit('setCurrentIndex', 0)
     commit('setPlayingStatus', false)
+  },
+  addSong({ commit, state }, song) {
+    let currentIndex = state.currentIndex
+    const playList = state.playList.slice()
+    const sequenceList = state.sequenceList.slice()
+    const playIndex = findIndex(playList, song)
+    // 如果在播放列表中找到了要添加的歌曲, 则直接切换 index
+    if (playIndex > -1) {
+      currentIndex = playIndex
+    } else {
+      // 如果不在播放列表中，添加歌曲后再切换 index
+      playList.push(song)
+      currentIndex = playList.length - 1
+      sequenceList.push(song)
+    }
+
+    commit('setCurrentIndex', currentIndex)
+    commit('setPlayList', playList)
+    commit('setSequenceList', sequenceList)
+    commit('setFullScreen', true)
+    commit('setPlayingStatus', true)
   }
 }
 

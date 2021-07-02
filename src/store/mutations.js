@@ -27,9 +27,12 @@ const mutations = {
       }
     })
   },
-  setWrapperTransform(state, transform) {
-    state.wrapperTransform = transform
+  setSearchHistory(state, searchHistory) {
+    state.searchHistory = searchHistory
   }
+  // setWrapperTransform(state, transform) {
+  //   state.wrapperTransform = transform
+  // }
 }
 
 export default mutations

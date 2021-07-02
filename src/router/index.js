@@ -55,7 +55,16 @@ const routes = [
   {
     name: '搜索',
     path: '/search',
-    component: Search
+    component: Search,
+    children: [
+      {
+        // name 不能重复，如果重复，则后路由会覆盖前路由
+        name: '搜索歌手详情',
+        path: ':id',
+        component: SingerDetail,
+        props: true
+      }
+    ]
   }
 ]
 

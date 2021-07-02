@@ -6,7 +6,7 @@
           <div class="confirm-content">
             <p class="text">{{ text }}</p>
             <div class="operate">
-              <div class="operate-btn-left" @click="confirm">
+              <div class="operate-btn left" @click="confirm">
                 {{ confirmBtnText }}
               </div>
               <div class="operate-btn" @click="cancel">{{ cancelBtnText }}</div>
@@ -44,15 +44,25 @@ export default {
     // function
     function confirm() {
       emit('confirm')
+      hide()
     }
     function cancel() {
       emit('cancel')
+      hide()
+    }
+    function show() {
+      visible.value = true
+    }
+    function hide() {
+      visible.value = false
     }
     return {
       // data
       visible,
       confirm,
-      cancel
+      cancel,
+      show,
+      hide
     }
   }
 }
