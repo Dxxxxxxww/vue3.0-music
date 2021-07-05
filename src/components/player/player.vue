@@ -131,6 +131,7 @@ import useLyric from '@/components/player/use-lyric'
 import useMiddleInteractive from '@/components/player/use-middle-interactive'
 import useAnimation from '@/components/player/use-animation'
 import MiniPlayer from './mini-player'
+import usePlayHistory from './use-play-history'
 
 export default {
   name: 'player',
@@ -272,6 +273,8 @@ export default {
       songReady.value = true
       // 如果歌曲先于歌词准备完毕，需要等歌词准备完毕才能播放歌词
       playLyric()
+      // 歌曲准备播放时保存播放历史记录
+      savePlay(currentSong.value)
     }
     // 播放器异常捕获
     // 歌曲无法播放的话需要将标签设置为 true，否则无法切换歌曲
@@ -354,6 +357,8 @@ export default {
       leave,
       afterLeave
     } = useAnimation()
+    // 封装保存播放历史记录逻辑
+    const { savePlay } = usePlayHistory()
 
     return {
       // tools

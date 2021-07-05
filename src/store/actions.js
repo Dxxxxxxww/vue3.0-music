@@ -75,8 +75,8 @@ const actions = {
     } else {
       // 如果不在播放列表中，添加歌曲后再切换 index
       playList.push(song)
-      currentIndex = playList.length - 1
       sequenceList.push(song)
+      currentIndex = playList.length - 1
     }
 
     commit('setCurrentIndex', currentIndex)

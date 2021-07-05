@@ -1,4 +1,4 @@
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch, onMounted, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
 import BScroll from '@better-scroll/core'
 import Slide from '@better-scroll/slide'
@@ -34,6 +34,7 @@ export default function useMiniSlider() {
             scrollX: true,
             scrollY: false,
             momentum: false,
+            bounce: false,
             probeType: 2,
             slide: {
               autoplay: false,
@@ -52,7 +53,7 @@ export default function useMiniSlider() {
     })
 
     watch(currentIndex, newIndex => {
-      if (sliderVal && sliderShow) {
+      if (sliderVal && sliderShow.value) {
         sliderVal.goToPage(newIndex, 0, 0)
       }
     })
@@ -61,7 +62,7 @@ export default function useMiniSlider() {
     // 没有播放列表时，如果刷新 slider 会报错，因为 slider 要求至少一个子元素
     // 切记：如果依赖的数据变化要手动去操作 dom 时，需要等待一个 nextTick ！
     watch(playList, async newPlayList => {
-      if (sliderVal && sliderShow && newPlayList.length) {
+      if (sliderVal && sliderShow.value && newPlayList.length) {
         await nextTick()
         sliderVal.refresh()
       }

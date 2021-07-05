@@ -40,6 +40,12 @@
               </li>
             </transition-group>
           </music-scroll>
+          <div class="list-add">
+            <div class="add" @click="showAddSong">
+              <i class="icon-add"></i>
+              <span class="text">添加歌曲到队列</span>
+            </div>
+          </div>
           <div class="list-footer" @click="hide">
             <span>关闭</span>
           </div>
@@ -49,6 +55,7 @@
             confirm-btn-text="清空"
             @confirm="confirmClear"
           ></music-confirm>
+          <add-song ref="addSongRef"></add-song>
         </div>
       </div>
     </transition>
@@ -61,9 +68,11 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { PLAY_MODE } from '@/assets/js/constant'
 import useMode from '@/components/player/use-mode'
 import useFavorite from '@/components/player/use-favorite'
+import AddSong from '@/components/add-song/add-song'
 
 export default {
   name: 'play-list',
+  components: { AddSong },
   data() {
     return {}
   },
@@ -72,6 +81,7 @@ export default {
     const scrollRef = ref(null)
     const listRef = ref(null)
     const confirmRef = ref(null)
+    const addSongRef = ref(null)
     // data
     const visible = ref(false)
     // 移除锁，避免对同一首歌进行删除，导致bug
@@ -160,6 +170,10 @@ export default {
     function showConfirm() {
       confirmRef.value.show()
     }
+    // 显示添加歌曲到列表
+    function showAddSong() {
+      addSongRef.value.show()
+    }
     // hooks
     const { iconMode, modeText, changeMode } = useMode()
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
@@ -169,6 +183,7 @@ export default {
       scrollRef,
       listRef,
       confirmRef,
+      addSongRef,
       // data
       visible,
       removing,
@@ -181,6 +196,7 @@ export default {
       removeSong,
       confirmClear,
       showConfirm,
+      showAddSong,
       // useMode
       iconMode,
       modeText,

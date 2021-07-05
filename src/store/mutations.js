@@ -29,6 +29,9 @@ const mutations = {
   },
   setSearchHistory(state, searchHistory) {
     state.searchHistory = searchHistory
+  },
+  setPlayHistory(state, songs) {
+    state.playHistory = songs
   }
   // setWrapperTransform(state, transform) {
   //   state.wrapperTransform = transform
