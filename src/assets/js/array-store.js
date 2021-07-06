@@ -43,3 +43,8 @@ export function clear(key) {
 export function load(key) {
   return storage.get(key, [])
 }
+
+// 保存整个列表到localStorage
+export function saveAll(items, key) {
+  storage.set(key, items)
+}

@@ -7,6 +7,7 @@ const Singer = () => import('@/views/singer.vue')
 const TopList = () => import('@/views/top-list.vue')
 const SingerDetail = () => import('@/views/singer-detail.vue')
 const TopDetail = () => import('@/views/top-detail')
+const UserCenter = () => import('@/views/user-center')
 
 const routes = [
   {
@@ -65,6 +66,13 @@ const routes = [
         props: true
       }
     ]
+  },
+  {
+    name: '用户中心',
+    path: '/user',
+    components: {
+      user: UserCenter
+    }
   }
 ]
 
