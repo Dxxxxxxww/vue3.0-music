@@ -1,7 +1,10 @@
 import axios from 'axios'
 
 const ERR_OK = 0
-const baseURL = '/'
+const baseURL =
+  process.env.NODE_ENV === 'production'
+    ? 'https://learn-vue3-0-music.vercel.app/'
+    : '/'
 
 axios.defaults.baseURL = baseURL
 

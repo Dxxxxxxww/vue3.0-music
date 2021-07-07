@@ -1,10 +1,16 @@
 <template>
   <MHeader />
   <Tab />
-  <router-view :style="viewStyle" />
+  <router-view :style="viewStyle" v-slot="{ Component }" >
+    <keep-alive>
+      <component :is="Component" />
+    </keep-alive>
+  </router-view>
   <router-view name="user" v-slot="{ Component }">
     <transition appear name="slide">
-      <component :is="Component" />
+      <keep-alive>
+        <component :is="Component" />
+      </keep-alive>
     </transition>
   </router-view>
   <player></player>
