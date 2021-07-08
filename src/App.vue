@@ -30,6 +30,7 @@ export default {
   },
   computed: {
     ...mapState(['playList']),
+    // 监听是否有歌曲播放，从而将 scroll 提高 60px 防止 miniplayer 遮住内容
     viewStyle() {
       const bottom = this.playList.length ? '60px' : '0'
       return {

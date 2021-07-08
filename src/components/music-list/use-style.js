@@ -67,6 +67,8 @@ export function useStyle(props) {
     const bottom = playList.value.length ? '60px' : '0'
     return {
       top: `${imageHeight.value}px`,
+      // 监听是否有歌曲播放，从而将 scroll 提高 60px 防止 miniplayer 遮住内容
+      // 在 App.vue 里对所有页面处理后，这里还需要单独处理是因为这里的 scroll 是二级路由的
       bottom
     }
   })
